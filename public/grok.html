@@ -247,8 +247,8 @@
                   <button data-tab="publications" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap">Publications</button>
                   <button data-tab="patents" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap">Patents</button>
                   <button data-tab="news" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap">News</button>
-                  <button data-tab="databases" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap">Databases</button>
-                  <button data-tab="notes" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap">BD Notes</button>
+                  <button data-tab="databases" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap hidden">Databases</button>
+                  <button data-tab="notes" class="tab px-1 pb-3 text-sm font-semibold text-slate-400 border-b-2 border-transparent hover:text-white hover:border-slate-600 transition-all whitespace-nowrap hidden ">BD Notes</button>
                 </nav>
               </div>
 
@@ -273,6 +273,266 @@
   <script>
     // Paste your leads array here
     const leads = [
+{
+  company: "Nuvectis Pharma (NASDAQ: NVCT)",
+  candidate: "NXP800 (a.k.a. CCT361814)",
+  modality: "Oral small molecule (HSF1 pathway inhibitor / GCN2-ISR activator phenotype)",
+  target: "HSF1 (Heat Shock Factor 1) pathway; downstream proteostasis; ISR/GCN2 activation",
+  enrollment: "Phase 1 recruiting — NCT06420349 (cholangiocarcinoma)",
+  lastUpdate: "2025-10-01",
+  employees: "13 (lean; heavy outsourcing)",
+  headquarters: "Fort Lee, New Jersey, USA",
+  website: "https://nuvectis.com/",
+  emailDomain: "nuvectis.com",
+  hiring: { 
+    status: "No active postings; relies on CRO/CDMO partnerships",
+    jobsUrl: "https://nuvectis.com/about-us/"
+  },
+
+  // Finance / Funding
+  funding: {
+    summary: "Public company; $13.5M public offering (Feb 5, 2025) extends runway to support NXP800/NXP900; prior ODD/FTD catalysts aided access to capital.",
+    cashScore: 3,
+    marketCap: "Small-cap (varies; ~sub-$150M during 2025)",
+    details: "Use of proceeds per PR: advance NXP800 & NXP900, hiring, G&A, general corporate purposes. Underwriter 30-day option for additional shares.",
+    rounds: [
+      { date: "2025-02-05", type: "Public Offering", amount: "$13.5M gross", link: "https://www.globenewswire.com/news-release/2025/02/05/3021254/0/en/Nuvectis-Pharma-Announces-Pricing-of-13-5-Million-Public-Offering-of-Common-Stock.html", notes: "Lucid Capital Markets bookrunner; 30-day option for 405k add'l shares" }
+    ],
+    financials: [
+      { date: "2025-08-06", period: "Q2 2025", link: "https://www.biospace.com/press-releases/nuvectis-pharma-inc-reports-second-quarter-2025-financial-results-and-business-highlights", highlights: "Reported operating expenses; continued progress of NXP800 & NXP900" }
+    ],
+    links: [
+      { label: "Public Offering PR (Feb 5, 2025)", url: "https://www.globenewswire.com/news-release/2025/02/05/3021254/0/en/Nuvectis-Pharma-Announces-Pricing-of-13-5-Million-Public-Offering-of-Common-Stock.html" },
+      { label: "NVCT Press/IR", url: "https://finance.yahoo.com/quote/NVCT/press-releases/" }
+    ]
+  },
+
+  irLinks: [
+    { label: "Investor Relations", url: "https://ir.nuvectis.com" },
+    { label: "Corporate Deck (Jan 2025)", url: "https://nuvectis.com/wp-content/uploads/NVCT-Corporate-Presentation_January-2025.pdf" },
+    { label: "Pipeline", url: "https://nuvectis.com/pipeline/" },
+    { label: "Press Releases", url: "https://nuvectis.com/press-release-view/" }
+  ],
+
+  // ClinicalTrials quick link
+  ctQuery: "https://www.clinicaltrials.gov/study/NCT06420349",
+
+  // Patents search link
+  patentSearch: "https://patents.google.com/?assignee=Nuvectis+Pharma",
+
+  // Key Contacts
+  contacts: [
+    { name: "Ron Bentsur", title: "Chairman, President & CEO", email: "ir@nuvectis.com", linkedin: "https://www.linkedin.com/in/ron-bentsur" },
+    { name: "Eyal Harari", title: "Chief Development Officer", linkedin: "https://www.linkedin.com/in/eyal-harari" },
+    { name: "Juan Sanchez, MD", title: "Director (Board) / Clinical Leader", linkedin: "https://www.linkedin.com/" }
+  ],
+
+  // COMPOUND (deep dive)
+  compound: {
+    summary: "First-in-class oral small-molecule inhibitor of the HSF1 pathway (origin: ICR/CRUK; clinical candidate code CCT361814; licensed to Nuvectis as NXP800). Disrupts HSF1-driven transcriptional program essential for tumor proteostasis; phenotypically associated with activation of GCN2/ISR leading to anti-tumor effects. Strong preclinical activity in ARID1A-deficient ovarian models; program pivoted toward cholangiocarcinoma with ODD.",
+    details: [
+      "Mechanism: Inhibits HSF1-dependent transcription; reduces HSP70/90 expression and stress-adaptation in tumor cells.",
+      "Phenotype: Triggers integrated stress response via GCN2 activation; translational downregulation in stressed tumor microenvironments.",
+      "Chemotype: Halogenated heteroaryl bi-amide; disclosed as CCT361814 in J. Med. Chem. 2023.",
+      "Key risks: Solid-state/polymorph variability; potential reactive residuals from amide activators; control nitrosamine risk from secondary amines.",
+      "CMC focus: Convergent route with dual amide couplings; late-stage piperazine alkylation; impurity fate mapping; genotoxic control per ICH M7.",
+      "Formulation: Immediate-release oral (capsule/tablet) likely; consider enabling formulations if exposure variability emerges.",
+      "Analytics: Develop stability-indicating methods; early forced-degradation map (acid/base/oxidative/photolysis) to guide DP specs."
+    ],
+    properties: {
+      pubchemCID: "117996795",
+      chemblId: "CHEMBL4635893",
+      iupac: "N-[5-(2,3-dihydro-1,4-benzodioxine-6-carbonylamino)-...]-quinoline-6-carboxamide (truncated long name)",
+      formula: "C26H24ClFN4O3",
+      mw: "~514 g/mol",
+      hbd: 2,
+      hba: 6,
+      rotBonds: 7,
+      tpsa: "~72 Å²",
+      logP: "~3–4 (est.)"
+    },
+    links: [
+      { label: "PubChem — NXP800", url: "https://pubchem.ncbi.nlm.nih.gov/compound/nxp800" },
+      { label: "J. Med. Chem. 2023 (Pasqua et al.)", url: "https://pubs.acs.org/doi/10.1021/acs.jmedchem.3c00156" },
+      { label: "ICR News (HSF1 inhibitor to clinic)", url: "https://www.icr.ac.uk/about-us/icr-news/detail/innovative-icr-discovered-drug-to-enter-first-clinical-trial-targeting-hsf1-pathway" },
+      { label: "AACR 2022 (New Drugs on the Horizon)", url: "https://nuvectis.com/wp-content/uploads/NXP800-New-Drugs-on-the-Horizon_-AACR-2022.pdf" }
+    ],
+    pubchem: {
+      cid: "117996795",
+      image: "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/CID/117996795/PNG",
+      props: [
+        { k: "Molecular Formula", v: "C26H24ClFN4O3" },
+        { k: "Exact Mass", v: "514.15 (approx.)" },
+        { k: "Topological Polar Surface Area", v: "~72 Å² (approx.)" },
+        { k: "H-bond Donors", v: "2" },
+        { k: "H-bond Acceptors", v: "6" },
+        { k: "Rotatable Bonds", v: "7" }
+      ]
+    },
+    chembl: {
+      id: "CHEMBL4635893",
+      image: "https://www.ebi.ac.uk/chembl/api/data/image/CHEMBL4635893.png",
+      notes: "ChEMBL compound report card maps to literature for CCT361814/NXP800; bioactivity table limited (clinical candidate)."
+    }
+  },
+
+  // TRIAL (very detailed)
+  trial: {
+    overview: "Phase 1, open-label, multi-center dose-escalation with expansion in advanced/metastatic cholangiocarcinoma; objective to establish safety, PK, and RP2D; exploratory efficacy and biomarker endpoints.",
+    design: "3+3 dose-escalation leading to expansion cohorts; oral daily dosing in 28-day cycles; tumor assessments per RECIST v1.1; optional biopsies for pharmacodynamics (HSF1/HSP70-90) and ISR markers.",
+    status: "Recruiting (as of 2025-10-01)",
+    phase: "Phase 1 (first-in-patient for cholangiocarcinoma)",
+    identifiers: {
+      nct: "NCT06420349",
+      sponsorProtocol: "MC230406"
+    },
+    sponsor: "Mayo Clinic (sponsor)",
+    collaborators: [ "Nuvectis Pharma, Inc." ],
+    primaryEndpoints: [
+      "Safety and tolerability (AEs/SAEs, DLTs)",
+      "Maximum tolerated dose (MTD) and/or recommended Phase 2 dose (RP2D)"
+    ],
+    secondaryEndpoints: [
+      "Plasma pharmacokinetics (Cmax, AUC, t1/2, Tmax)",
+      "Preliminary antitumor activity (ORR, DCR, DoR, PFS by RECIST v1.1)",
+      "Pharmacodynamic modulation of HSF1/ISR biomarkers in tumor/ctDNA (exploratory)"
+    ],
+    population: "Adults with advanced or metastatic cholangiocarcinoma; measurable disease; ECOG 0–1; adequate organ function; prior lines allowed per protocol.",
+    enrollment: { planned: "≈30", actual: "TBD" },
+    locations: [
+      { site: "Mayo Clinic", city: "Rochester, Minnesota, USA" },
+      { site: "Mayo Clinic", city: "Phoenix/Scottsdale, Arizona, USA" }
+    ],
+    startDate: "2024 (posted/initiated)",
+    keyDates: [
+      { label: "First Posted", value: "2024–2025 range (see CT.gov history)" },
+      { label: "Last Update", value: "rolling in 2025" }
+    ],
+    links: [
+      { label: "ClinicalTrials.gov — NCT06420349", url: "https://www.clinicaltrials.gov/study/NCT06420349" },
+      { label: "Mayo Clinic Trial Page", url: "https://www.mayo.edu/research/clinical-trials/cls-20566366" },
+      { label: "PAN Foundation Trial Finder", url: "https://trialfinder.panfoundation.org/en-US/trial/listing/486995" }
+    ],
+    notes: [
+      "Opportunity for CDMO: secure Phase 1/expansion cohort supply with inspection-ready documentation and polymorph control.",
+      "Biopsy-driven PD endpoints make batch-to-batch consistency crucial for exposure-response analysis."
+    ]
+  },
+
+  // PUBLICATIONS with summaries
+  publications: {
+    summary: "Peer-reviewed disclosure and translational rationale support first-in-class HSF1 pathway inhibition; clinical transition documented via institutional/press materials.",
+    list: [
+      { 
+        label: "HSF1 Pathway Inhibitor Clinical Candidate (CCT361814/NXP800) — J. Med. Chem. 2023",
+        url: "https://pubs.acs.org/doi/10.1021/acs.jmedchem.3c00156",
+        journal: "Journal of Medicinal Chemistry (2023)",
+        summary: "Medicinal chemistry from phenotypic hit to clinical candidate; structure, SAR, PK and in vivo efficacy described; candidate licensed as NXP800."
+      },
+      { 
+        label: "HSF1 inhibitor heading to clinic — ICR News",
+        url: "https://www.icr.ac.uk/about-us/icr-news/detail/innovative-icr-discovered-drug-to-enter-first-clinical-trial-targeting-hsf1-pathway",
+        journal: "Institute of Cancer Research (News)",
+        summary: "Explains HSF1’s role and preclinical tumor regression in OCCC/endometrioid models; outlines translational plan."
+      },
+      {
+        label: "A Phase 1 study of NXP800 in cholangiocarcinoma",
+        url: "https://pubmed.ncbi.nlm.nih.gov/40717483/",
+        journal: "Clinical Trial Protocol Summary (2025)",
+        summary: "Lay summary of the Phase 1 cholangiocarcinoma trial: objectives (MTD/RP2D), need in CCA, and rationale for targeting stress response."
+      }
+    ]
+  },
+
+  // PATENTS — coverage data
+  patents: {
+    summary: "Families covering composition-of-matter, formulations, and oncology uses around HSF1 pathway inhibitors including CCT361814/NXP800.",
+    families: [
+      {
+        pubNo: "WO2022165483",
+        title: "HSF1 Pathway Inhibitors",
+        priority: "2021",
+        jurisdictions: ["WO", "US", "EP"],
+        status: "Published",
+        keyClaims: [
+          "Compounds of Formula (I) including CCT361814",
+          "Use in treating cancers incl. ovarian and cholangiocarcinoma",
+          "Pharmaceutical compositions and methods"
+        ],
+        link: "https://patents.google.com/patent/WO2022165483"
+      },
+      {
+        pubNo: "WO2022229978",
+        title: "HSF1 Pathway Inhibitors and Methods of Use",
+        priority: "2021–2022",
+        jurisdictions: ["WO", "US", "EP"],
+        status: "Published",
+        keyClaims: [
+          "Additional analog series; salt forms and polymorphs",
+          "Dosing regimens; combination therapies"
+        ],
+        link: "https://patents.google.com/patent/WO2022229978"
+      }
+    ],
+    links: [
+      { label: "Google Patents — Assignee Search", url: "https://patents.google.com/?assignee=Nuvectis+Pharma" }
+    ]
+  },
+
+  // NEWS — linked with snippets
+  news: {
+    summary: "Funding updates, designations (ODD/FTD), and program pivots dominate 2023–2025 coverage.",
+    list: [
+      { 
+        label: "Nuvectis Pharma Announces $13.5M Public Offering (Feb 5, 2025)",
+        url: "https://www.globenewswire.com/news-release/2025/02/05/3021254/0/en/Nuvectis-Pharma-Announces-Pricing-of-13-5-Million-Public-Offering-of-Common-Stock.html",
+        date: "2025-02-05",
+        snippet: "Proceeds to advance NXP800/NXP900; Lucid Capital Markets as bookrunner."
+      },
+      {
+        label: "FDA grants Orphan Drug Designation to NXP800 for cholangiocarcinoma (Aug 17, 2023)",
+        url: "https://www.onclive.com/view/fda-grants-orphan-drug-designation-to-nxp800-for-cholangiocarcinoma",
+        date: "2023-08-17",
+        snippet: "ODD in CCA; Fast Track previously granted for ARID1A-mutated ovarian cancer."
+      },
+      {
+        label: "Corporate Deck (Jan 2025): Designations & pipeline snapshot",
+        url: "https://nuvectis.com/wp-content/uploads/NVCT-Corporate-Presentation_January-2025.pdf",
+        date: "2025-01-01",
+        snippet: "Deck indicates ODD for CCA and ovarian, and program status heading into 2025."
+      },
+      {
+        label: "Program update: Phase 1 cholangiocarcinoma recruiting at Mayo",
+        url: "https://www.mayo.edu/research/clinical-trials/cls-20566366",
+        date: "2025-04-09",
+        snippet: "Trial page lists NCT ID, site IRB numbers, and objective to determine MTD/RP2D."
+      }
+    ],
+    xPosts: []
+  },
+
+  // Regulatory designations
+  regulatory: {
+    orphanDrugStatus: [
+      { indication: "Cholangiocarcinoma", date: "2023-08-17", link: "https://www.onclive.com/view/fda-grants-orphan-drug-designation-to-nxp800-for-cholangiocarcinoma" }
+    ],
+    fastTrack: [
+      { indication: "Platinum-resistant, ARID1A-mutated ovarian cancer", date: "2022-12", link: "https://firstwordpharma.com/story/5890109" }
+    ],
+    notes: "Designations support accelerated interactions and potential incentives."
+  },
+
+  // Databases crossrefs
+  databases: {
+    pubchem: "https://pubchem.ncbi.nlm.nih.gov/compound/nxp800",
+    chembl: "https://www.ebi.ac.uk/chembl/compound_report_card/CHEMBL4635893/",
+    icr: "https://www.icr.ac.uk/about-us/icr-news/detail/innovative-icr-discovered-drug-to-enter-first-clinical-trial-targeting-hsf1-pathway"
+  },
+
+  // BD Notes & Insights
+  bdNotes: "Immediate CDMO opportunities: (1) lock a robust, greener route with low GN impurities; (2) polymorph/salt decision & control strategy; (3) IMP packaging & global QP release; (4) PD-biomarker aligned stability strategy; (5) expansion cohort supply planning (2026). Position Phlow as US-based, inspection-ready partner for FIH→Ph2.",
+  xInsights: "Small team + recruiting Phase 1 = high outsourcing need; first-in-class narrative strong; ensure messaging around de-risking supply and analytical consistency for PD endpoints."
+},
       // Entry 1: Superluminal Medicines (as before, with minor additions)
       {
         company: "Superluminal Medicines",
@@ -1079,9 +1339,388 @@ document.addEventListener('click', (e) => {
 // }
   
 // Enhanced openModal function with premium UI
+// function openModal(item) {
+//   $('#mTitle').textContent = item.company;
+//   $('#mSubtitle').textContent = `${item.candidate} — ${item.modality}`;
+
+//   // Key Facts with icons
+//   const factIcons = {
+//     "Stage": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />',
+//     "Target": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />',
+//     "Team Size": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />',
+//     "Hiring": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />',
+//     "Last Updated": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
+//     "X Insights": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />'
+//   };
+  
+//   const facts = [
+//     ["Stage", item.enrollment],
+//     ["Target", item.target],
+//     ["Team Size", item.employees || '—'],
+//     ["Hiring", item.hiring?.status || '—'],
+//     ["Last Updated", item.lastUpdate || '—'],
+//     ["X Insights", item.xInsights || '—']
+//   ];
+  
+//   $('#mFacts').innerHTML = facts.map(([k, v]) => `
+//     <div class="group hover:bg-slate-700/30 p-3 rounded-lg transition-all">
+//       <div class="flex items-center gap-2 mb-1">
+//         <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//           ${factIcons[k] || '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />'}
+//         </svg>
+//         <dt class="text-xs font-semibold text-slate-400 uppercase tracking-wider">${k}</dt>
+//       </div>
+//       <dd class="text-sm font-medium text-white pl-6">${v}</dd>
+//     </div>
+//   `).join('');
+
+//   // Enhanced Contacts
+//   $('#mContacts').innerHTML = item.contacts.map(c => `
+//     <li class="group hover:bg-slate-700/30 p-4 rounded-xl transition-all border border-transparent hover:border-slate-600">
+//       <div class="flex items-start gap-3">
+//         <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+//           <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+//           </svg>
+//         </div>
+//         <div class="flex-1 min-w-0">
+//           <div class="font-semibold text-white text-base">${c.name}</div>
+//           <div class="text-sm text-slate-400 mt-0.5">${c.title}</div>
+//           ${c.email ? `
+//             <div class="flex items-center gap-2 mt-2">
+//               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+//               </svg>
+//               <a href="mailto:${c.email}" class="text-xs text-slate-500 hover:text-indigo-400 transition-colors">${c.email}</a>
+//             </div>
+//           ` : ''}
+//           ${c.linkedin ? `
+//             <a href="${c.linkedin}" target="_blank" class="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
+//               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+//                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+//               </svg>
+//               LinkedIn Profile
+//             </a>
+//           ` : ''}
+//         </div>
+//       </div>
+//     </li>
+//   `).join('');
+  
+//   if (item.emailDomain) {
+//     $('#mEmailPattern').innerHTML = `
+//       <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-800/50 p-3 rounded-lg">
+//         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//         </svg>
+//         <span>Email pattern: <span class="text-indigo-400 font-mono">firstname.lastname@${item.emailDomain}</span></span>
+//       </div>
+//     `;
+//   }
+
+//   // Quick links
+//   $('#mIR').href = item.irLinks?.[0]?.url || '#';
+//   $('#mJobs').href = item.hiring?.jobsUrl || '#';
+//   $('#mCT').href = item.ctQuery || '#';
+//   $('#mPat').href = item.patentSearch || '#';
+
+//   // Tab: Compound - Enhanced with better structure
+//   $('#tab-compound').innerHTML = `
+//     <div class="space-y-6">
+//       <!-- Compound Summary Card -->
+//       <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/50">
+//         <div class="flex items-start gap-3 mb-4">
+//           <div class="p-2 rounded-lg bg-indigo-600/20">
+//             <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+//             </svg>
+//           </div>
+//           <div class="flex-1">
+//             <h3 class="text-lg font-bold text-white mb-2">Compound Overview</h3>
+//             <p class="text-sm text-slate-300 leading-relaxed">${item.compound?.summary || 'No information available'}</p>
+//           </div>
+//         </div>
+//       </div>
+
+//       ${item.compound?.details ? `
+//       <!-- Process Chemistry Details -->
+//       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//         <div class="flex items-center gap-2 mb-4">
+//           <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+//           </svg>
+//           <h4 class="text-base font-semibold text-white">Process Chemistry Details</h4>
+//         </div>
+//         <ul class="space-y-3">
+//           ${item.compound.details.map(d => `
+//             <li class="flex items-start gap-3 text-sm text-slate-300 p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+//               <span class="text-indigo-400 mt-0.5 font-bold">•</span>
+//               <span class="flex-1">${d}</span>
+//             </li>
+//           `).join('')}
+//         </ul>
+//         ${item.compound.links?.length ? `
+//           <div class="mt-5 pt-5 border-t border-slate-700/50">
+//             <div class="flex items-center gap-2 mb-3">
+//               <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+//               </svg>
+//               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Related Links</span>
+//             </div>
+//             <div class="flex flex-wrap gap-2">
+//               ${item.compound.links.map(l => `
+//                 <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
+//                   ${l.label}
+//                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+//                   </svg>
+//                 </a>
+//               `).join('')}
+//             </div>
+//           </div>
+//         ` : ''}
+//       </div>
+//       ` : ''}
+
+//       <!-- Database Information Grid -->
+//       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+//         <!-- ChEMBL Card -->
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <div class="flex items-center gap-2 mb-4">
+//             <div class="p-2 rounded-lg bg-blue-600/20">
+//               <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+//               </svg>
+//             </div>
+//             <h4 class="text-base font-semibold text-white">ChEMBL Database</h4>
+//           </div>
+//           <p class="text-sm text-slate-300 leading-relaxed">${item.compound?.chembl || 'No ChEMBL data available'}</p>
+//         </div>
+
+//         <!-- PubChem Card -->
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <div class="flex items-center gap-2 mb-4">
+//             <div class="p-2 rounded-lg bg-green-600/20">
+//               <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+//               </svg>
+//             </div>
+//             <h4 class="text-base font-semibold text-white">PubChem Database</h4>
+//           </div>
+//           <p class="text-sm text-slate-300 leading-relaxed mb-4">${item.compound?.pubchem || 'No PubChem data available'}</p>
+          
+//           ${item.compound?.pubchemTable?.length ? `
+//             <div class="mt-4 overflow-hidden rounded-lg border border-slate-700/50">
+//               <table class="w-full text-sm">
+//                 <thead class="bg-slate-900/80">
+//                   <tr>
+//                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Compound</th>
+//                     <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">CID</th>
+//                     <th class="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody class="divide-y divide-slate-700/30">
+//                   ${item.compound.pubchemTable.map(row => `
+//                     <tr class="hover:bg-slate-800/50 transition-colors">
+//                       <td class="px-4 py-3">
+//                         <div class="font-medium text-white">${row.name}</div>
+//                         <div class="text-xs text-slate-500 mt-0.5">${row.details || ''}</div>
+//                       </td>
+//                       <td class="px-4 py-3 text-slate-300 font-mono text-xs">${row.cid}</td>
+//                       <td class="px-4 py-3 text-right">
+//                         <a href="${row.link}" target="_blank" class="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium">
+//                           View
+//                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+//                           </svg>
+//                         </a>
+//                       </td>
+//                     </tr>
+//                   `).join('')}
+//                 </tbody>
+//               </table>
+//             </div>
+//           ` : ''}
+//         </div>
+//       </div>
+//     </div>
+//   `;
+
+//   // Other tabs remain similar but with consistent styling...
+//   // (I'll show a couple more enhanced versions)
+  
+//   // Tab: Trial
+//   $('#tab-trial').innerHTML = `
+//     <div class="space-y-6">
+//       <div class="bg-gradient-to-br from-purple-900/20 to-slate-900/50 rounded-xl p-6 border border-purple-700/30">
+//         <div class="flex items-start gap-3">
+//           <div class="p-2 rounded-lg bg-purple-600/20">
+//             <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+//             </svg>
+//           </div>
+//           <div class="flex-1">
+//             <h3 class="text-lg font-bold text-white mb-2">Trial Design</h3>
+//             <p class="text-sm text-slate-300 leading-relaxed">${item.trial?.design || 'No trial information available'}</p>
+//           </div>
+//         </div>
+//       </div>
+      
+//       ${item.trial?.notes?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <div class="flex items-center gap-2 mb-4">
+//             <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+//             </svg>
+//             <h4 class="text-base font-semibold text-white">Key Considerations</h4>
+//           </div>
+//           <ul class="space-y-3">
+//             ${item.trial.notes.map(n => `
+//               <li class="flex items-start gap-3 text-sm text-slate-300 p-3 rounded-lg bg-slate-900/30">
+//                 <span class="text-amber-400 mt-0.5">⚠</span>
+//                 <span>${n}</span>
+//               </li>
+//             `).join('')}
+//           </ul>
+//         </div>
+//       ` : ''}
+//     </div>
+//   `;
+
+//   // Tab: Funding
+//   $('#tab-funding').innerHTML = `
+//     <div class="space-y-6">
+//       <div class="bg-gradient-to-br from-green-900/20 to-slate-900/50 rounded-xl p-6 border border-green-700/30">
+//         <div class="flex items-start gap-3">
+//           <div class="p-2 rounded-lg bg-green-600/20">
+//             <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+//             </svg>
+//           </div>
+//           <div class="flex-1">
+//             <div class="flex items-center gap-3 mb-3">
+//               <h3 class="text-lg font-bold text-white">Funding Overview</h3>
+//               <span class="px-3 py-1 rounded-full bg-green-600/20 text-green-400 text-xs font-bold border border-green-600/30">
+//                 Score: ${item.funding?.cashScore || 'N/A'}/5
+//               </span>
+//             </div>
+//             <p class="text-sm text-slate-300 leading-relaxed mb-3">${item.funding?.summary || 'No funding information'}</p>
+//             <p class="text-sm text-slate-400 leading-relaxed">${item.funding?.details || ''}</p>
+//           </div>
+//         </div>
+//       </div>
+      
+//       ${item.funding?.links?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Funding Resources</h4>
+//           <div class="flex flex-wrap gap-2">
+//             ${item.funding.links.map(l => `
+//               <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600/10 text-green-400 hover:bg-green-600 hover:text-white text-sm font-medium transition-all border border-green-600/20">
+//                 ${l.label}
+//                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+//                 </svg>
+//               </a>
+//             `).join('')}
+//           </div>
+//         </div>
+//       ` : ''}
+//     </div>
+//   `;
+
+//   // Continue similar pattern for remaining tabs...
+//   $('#tab-publications').innerHTML = `
+//     <div class="space-y-6">
+//       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//         <p class="text-sm text-slate-300">${item.publications?.summary || 'No publications available'}</p>
+//       </div>
+//       ${item.publications?.list?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Publications</h4>
+//           <ul class="space-y-3">
+//             ${item.publications.list.map(p => `
+//               <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+//                 <a href="${p.url}" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-start gap-2">
+//                   <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+//                   </svg>
+//                   <span>${p.label}</span>
+//                 </a>
+//               </li>
+//             `).join('')}
+//           </ul>
+//         </div>
+//       ` : ''}
+//     </div>
+//   `;
+
+//   $('#tab-patents').innerHTML = `
+//     <div class="space-y-6">
+//       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//         <p class="text-sm text-slate-300">${item.patents?.summary || 'No patent information available'}</p>
+//       </div>
+//       ${item.patents?.links?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Patent Resources</h4>
+//           <div class="flex flex-wrap gap-2">
+//             ${item.patents.links.map(l => `
+//               <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
+//                 ${l.label}
+//                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+//                 </svg>
+//               </a>
+//             `).join('')}
+//           </div>
+//         </div>
+//       ` : ''}
+//     </div>
+//   `;
+
+//   $('#tab-news').innerHTML = `
+//     <div class="space-y-6">
+//       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//         <p class="text-sm text-slate-300 mb-4">${item.news?.summary || 'No news available'}</p>
+//       </div>
+//       ${item.news?.list?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">News Articles</h4>
+//           <ul class="space-y-3">
+//             ${item.news.list.map(n => `
+//               <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+//                 <a href="${n.url}" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-start gap-2">
+//                   <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+//                   </svg>
+//                   <span>${n.label}</span>
+//                 </a>
+//               </li>
+//             `).join('')}
+//           </ul>
+//         </div>
+//       ` : ''}
+//       ${item.citations?.length ? `
+//         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+//           <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Key Citations</h4>
+//           <ul class="space-y-2">
+//             ${item.citations.map(c => `
+//               <li>
+//                 <a href="${c.url}" target="_blank" class="text-xs text-slate-400 hover:text-indigo-300 transition-colors">${c.label} →</a>
+//               </li>
+//             `).join('')}
+//           </ul>
+//         </div>
+//       ` : ''}
+//     </div>
+//   `;
+
 function openModal(item) {
-  $('#mTitle').textContent = item.company;
-  $('#mSubtitle').textContent = `${item.candidate} — ${item.modality}`;
+  // Safe getter
+  const safe = (v, fb='—') => (v===undefined || v===null || v==='' ? fb : v);
+  const has = (obj, key) => obj && Object.prototype.hasOwnProperty.call(obj, key);
+
+  $('#mTitle').textContent = safe(item.company);
+  $('#mSubtitle').textContent = `${safe(item.candidate)} — ${safe(item.modality)}`;
 
   // Key Facts with icons
   const factIcons = {
@@ -1092,16 +1731,16 @@ function openModal(item) {
     "Last Updated": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />',
     "X Insights": '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />'
   };
-  
+
   const facts = [
-    ["Stage", item.enrollment],
-    ["Target", item.target],
-    ["Team Size", item.employees || '—'],
-    ["Hiring", item.hiring?.status || '—'],
-    ["Last Updated", item.lastUpdate || '—'],
-    ["X Insights", item.xInsights || '—']
+    ["Stage", safe(item.enrollment)],
+    ["Target", safe(item.target)],
+    ["Team Size", safe(item.employees)],
+    ["Hiring", safe(item.hiring?.status)],
+    ["Last Updated", safe(item.lastUpdate)],
+    ["X Insights", safe(item.xInsights)]
   ];
-  
+
   $('#mFacts').innerHTML = facts.map(([k, v]) => `
     <div class="group hover:bg-slate-700/30 p-3 rounded-lg transition-all">
       <div class="flex items-center gap-2 mb-1">
@@ -1114,8 +1753,8 @@ function openModal(item) {
     </div>
   `).join('');
 
-  // Enhanced Contacts
-  $('#mContacts').innerHTML = item.contacts.map(c => `
+  // Contacts
+  $('#mContacts').innerHTML = (item.contacts || []).map(c => `
     <li class="group hover:bg-slate-700/30 p-4 rounded-xl transition-all border border-transparent hover:border-slate-600">
       <div class="flex items-start gap-3">
         <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
@@ -1124,8 +1763,8 @@ function openModal(item) {
           </svg>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-white text-base">${c.name}</div>
-          <div class="text-sm text-slate-400 mt-0.5">${c.title}</div>
+          <div class="font-semibold text-white text-base">${safe(c.name)}</div>
+          <div class="text-sm text-slate-400 mt-0.5">${safe(c.title)}</div>
           ${c.email ? `
             <div class="flex items-center gap-2 mt-2">
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1146,150 +1785,105 @@ function openModal(item) {
       </div>
     </li>
   `).join('');
-  
+
   if (item.emailDomain) {
     $('#mEmailPattern').innerHTML = `
-      <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-800/50 p-3 rounded-lg">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>Email pattern: <span class="text-indigo-400 font-mono">firstname.lastname@${item.emailDomain}</span></span>
-      </div>
+
     `;
+  } else {
+    $('#mEmailPattern').innerHTML = '';
   }
 
-  // Quick links
+  // Quick actions
   $('#mIR').href = item.irLinks?.[0]?.url || '#';
   $('#mJobs').href = item.hiring?.jobsUrl || '#';
   $('#mCT').href = item.ctQuery || '#';
   $('#mPat').href = item.patentSearch || '#';
 
-  // Tab: Compound - Enhanced with better structure
+  // ---- TAB: COMPOUND ----
+  const compoundProps = (() => {
+    const props = item.compound?.pubchem?.props || [];
+    const rows = props.map(p => `
+      <tr class="border-t border-slate-700/40">
+        <td class="px-4 py-2 text-slate-400 text-xs">${safe(p.k)}</td>
+        <td class="px-4 py-2 text-white text-xs">${safe(p.v)}</td>
+      </tr>
+    `).join('');
+    return rows || '';
+  })();
+
+const chemblId = item.compound?.chembl?.id || item.compound?.chemblId;
+
+// Use ChEMBL molecule PNG endpoint (the old /data/image/ route 404s)
+const chemblImg = chemblId
+  ? `<img
+       src="https://www.ebi.ac.uk/chembl/api/data/molecule/${encodeURIComponent(chemblId)}.png"
+       alt="ChEMBL structure"
+       class="w-full rounded-lg border border-slate-700/50"
+       onerror="this.onerror=null;${
+         item.compound?.pubchem?.image
+           ? `this.src='${item.compound.pubchem.image}'`
+           : `this.style.display='none';this.insertAdjacentHTML('afterend','<div class=&quot;text-xs text-slate-500&quot;>No image</div>')`
+       }"
+     >`
+  : '';
+  
+  
+  const pubchemImg = item.compound?.pubchem?.image ? `<img src="${item.compound.pubchem.image}" alt="PubChem structure" class="w-full rounded-lg border border-slate-700/50">` : '';
+
   $('#tab-compound').innerHTML = `
     <div class="space-y-6">
-      <!-- Compound Summary Card -->
       <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-start gap-3 mb-4">
-          <div class="p-2 rounded-lg bg-indigo-600/20">
-            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-lg font-bold text-white mb-2">Compound Overview</h3>
-            <p class="text-sm text-slate-300 leading-relaxed">${item.compound?.summary || 'No information available'}</p>
-          </div>
-        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Compound Overview</h3>
+        <p class="text-sm text-slate-300 leading-relaxed">${safe(item.compound?.summary)}</p>
       </div>
 
-      ${item.compound?.details ? `
-      <!-- Process Chemistry Details -->
-      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-        <div class="flex items-center gap-2 mb-4">
-          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-          </svg>
-          <h4 class="text-base font-semibold text-white">Process Chemistry Details</h4>
-        </div>
-        <ul class="space-y-3">
-          ${item.compound.details.map(d => `
-            <li class="flex items-start gap-3 text-sm text-slate-300 p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
-              <span class="text-indigo-400 mt-0.5 font-bold">•</span>
-              <span class="flex-1">${d}</span>
-            </li>
-          `).join('')}
-        </ul>
-        ${item.compound.links?.length ? `
-          <div class="mt-5 pt-5 border-t border-slate-700/50">
-            <div class="flex items-center gap-2 mb-3">
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Related Links</span>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              ${item.compound.links.map(l => `
-                <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
-                  ${l.label}
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </a>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
-      </div>
-      ` : ''}
-
-      <!-- Database Information Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- ChEMBL Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-blue-600/20">
-              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-            </div>
-            <h4 class="text-base font-semibold text-white">ChEMBL Database</h4>
+          <h4 class="text-base font-semibold text-white mb-3">PubChem</h4>
+          ${pubchemImg || '<div class="text-xs text-slate-500">No image</div>'}
+          <div class="mt-3 text-xs text-slate-300">CID: <span class="font-mono">${safe(item.compound?.pubchem?.cid)}</span></div>
+          <table class="w-full mt-3 text-sm">${compoundProps}</table>
+          <div class="mt-3">
+            <a href="${safe(item.compound?.pubchem?.cid ? `https://pubchem.ncbi.nlm.nih.gov/compound/${item.compound.pubchem.cid}` : (item.compound?.links?.find(l=>/pubchem/i.test(l.label))?.url || '#'))}" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300">Open in PubChem →</a>
           </div>
-          <p class="text-sm text-slate-300 leading-relaxed">${item.compound?.chembl || 'No ChEMBL data available'}</p>
         </div>
 
-        <!-- PubChem Card -->
         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <div class="flex items-center gap-2 mb-4">
-            <div class="p-2 rounded-lg bg-green-600/20">
-              <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <h4 class="text-base font-semibold text-white">PubChem Database</h4>
+          <h4 class="text-base font-semibold text-white mb-3">ChEMBL</h4>
+          ${chemblImg || '<div class="text-xs text-slate-500">No image</div>'}
+          <div class="mt-3 text-xs text-slate-300">ChEMBL ID: <span class="font-mono">${safe(item.compound?.chembl?.id || item.compound?.chemblId)}</span></div>
+          <div class="mt-3">
+            <a href="${safe(item.databases?.chembl || (item.compound?.links?.find(l=>/chembl/i.test(l.label))?.url || '#'))}" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300">Open in ChEMBL →</a>
           </div>
-          <p class="text-sm text-slate-300 leading-relaxed mb-4">${item.compound?.pubchem || 'No PubChem data available'}</p>
-          
-          ${item.compound?.pubchemTable?.length ? `
-            <div class="mt-4 overflow-hidden rounded-lg border border-slate-700/50">
-              <table class="w-full text-sm">
-                <thead class="bg-slate-900/80">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Compound</th>
-                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">CID</th>
-                    <th class="px-4 py-3 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-700/30">
-                  ${item.compound.pubchemTable.map(row => `
-                    <tr class="hover:bg-slate-800/50 transition-colors">
-                      <td class="px-4 py-3">
-                        <div class="font-medium text-white">${row.name}</div>
-                        <div class="text-xs text-slate-500 mt-0.5">${row.details || ''}</div>
-                      </td>
-                      <td class="px-4 py-3 text-slate-300 font-mono text-xs">${row.cid}</td>
-                      <td class="px-4 py-3 text-right">
-                        <a href="${row.link}" target="_blank" class="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 font-medium">
-                          View
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                        </a>
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          ` : ''}
+        </div>
+
+        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+          <h4 class="text-base font-semibold text-white mb-3">Process Chemistry & CMC</h4>
+          <ul class="space-y-2">
+            ${(item.compound?.details || []).map(d => `<li class="text-sm text-slate-300">• ${d}</li>`).join('') || '<li class="text-sm text-slate-500">No details provided</li>'}
+          </ul>
+          <div class="mt-4 flex flex-wrap gap-2">
+            ${(item.compound?.links || []).map(l => `
+              <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
+                ${l.label}
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>`).join('')}
+          </div>
         </div>
       </div>
     </div>
   `;
 
-  // Other tabs remain similar but with consistent styling...
-  // (I'll show a couple more enhanced versions)
-  
-  // Tab: Trial
+  // ---- TAB: TRIAL ----
+  const locHtml = (item.trial?.locations || []).map(s => `
+    <li class="flex items-center gap-2 text-sm text-slate-300">
+      <span class="text-indigo-400">•</span> ${safe(s.site)} — ${safe(s.city)}
+    </li>
+  `).join('') || '<li class="text-sm text-slate-500">No sites listed</li>';
+
   $('#tab-trial').innerHTML = `
     <div class="space-y-6">
       <div class="bg-gradient-to-br from-purple-900/20 to-slate-900/50 rounded-xl p-6 border border-purple-700/30">
@@ -1300,34 +1894,70 @@ function openModal(item) {
             </svg>
           </div>
           <div class="flex-1">
-            <h3 class="text-lg font-bold text-white mb-2">Trial Design</h3>
-            <p class="text-sm text-slate-300 leading-relaxed">${item.trial?.design || 'No trial information available'}</p>
+            <h3 class="text-lg font-bold text-white mb-2">Trial Overview</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">${safe(item.trial?.overview || item.trial?.design)}</p>
+            <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <div class="text-slate-400">Status</div>
+                <div class="text-white font-semibold">${safe(item.trial?.status)}</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <div class="text-slate-400">Phase</div>
+                <div class="text-white font-semibold">${safe(item.trial?.phase)}</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <div class="text-slate-400">Planned N</div>
+                <div class="text-white font-semibold">${safe(item.trial?.enrollment?.planned)}</div>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
+                <div class="text-slate-400">NCT</div>
+                <div class="text-white font-mono">${safe(item.trial?.identifiers?.nct)}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      
-      ${item.trial?.notes?.length ? `
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <div class="flex items-center gap-2 mb-4">
-            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <h4 class="text-base font-semibold text-white">Key Considerations</h4>
-          </div>
-          <ul class="space-y-3">
-            ${item.trial.notes.map(n => `
-              <li class="flex items-start gap-3 text-sm text-slate-300 p-3 rounded-lg bg-slate-900/30">
-                <span class="text-amber-400 mt-0.5">⚠</span>
-                <span>${n}</span>
-              </li>
-            `).join('')}
-          </ul>
+          <h4 class="text-base font-semibold text-white mb-3">Endpoints</h4>
+          <div class="text-sm text-slate-400 mb-2">Primary</div>
+          <ul class="space-y-2">${(item.trial?.primaryEndpoints || []).map(e => `<li class="text-sm text-slate-300">• ${e}</li>`).join('') || '<li class="text-sm text-slate-500">Not listed</li>'}</ul>
+          <div class="text-sm text-slate-400 mt-4 mb-2">Secondary</div>
+          <ul class="space-y-2">${(item.trial?.secondaryEndpoints || []).map(e => `<li class="text-sm text-slate-300">• ${e}</li>`).join('') || '<li class="text-sm text-slate-500">Not listed</li>'}</ul>
         </div>
-      ` : ''}
+        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+          <h4 class="text-base font-semibold text-white mb-3">Sites & Governance</h4>
+          <div class="text-sm text-slate-300 mb-2"><span class="text-slate-400">Sponsor:</span> ${safe(item.trial?.sponsor)}</div>
+          <div class="text-sm text-slate-300 mb-2"><span class="text-slate-400">Collaborators:</span> ${safe((item.trial?.collaborators || []).join(', '))}</div>
+          <ul class="mt-3 space-y-1">${locHtml}</ul>
+          <div class="mt-4 flex flex-wrap gap-2">
+            ${(item.trial?.links || []).map(l => `<a href="${l.url}" target="_blank" class="text-xs px-3 py-1.5 rounded-lg bg-purple-600/10 text-purple-300 hover:bg-purple-600 hover:text-white border border-purple-600/20">${l.label}</a>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      ${(item.trial?.notes || []).length ? `
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-base font-semibold text-white mb-3">Notes for BD</h4>
+        <ul class="space-y-2">
+          ${item.trial.notes.map(n => `<li class="text-sm text-slate-300">• ${n}</li>`).join('')}
+        </ul>
+      </div>` : ''}
     </div>
   `;
 
-  // Tab: Funding
+  // ---- TAB: FUNDING ----
+  const roundRows = (item.funding?.rounds || []).map(r => `
+    <tr class="border-t border-slate-700/40">
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(r.date)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(r.type)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(r.amount)}</td>
+      <td class="px-4 py-2 text-xs"><a href="${safe(r.link,'#')}" target="_blank" class="text-indigo-400 hover:text-indigo-300">Source →</a></td>
+      <td class="px-4 py-2 text-xs text-slate-500">${safe(r.notes)}</td>
+    </tr>
+  `).join('') || '<tr><td class="px-4 py-2 text-xs text-slate-500" colspan="5">No rounds listed</td></tr>';
+
   $('#tab-funding').innerHTML = `
     <div class="space-y-6">
       <div class="bg-gradient-to-br from-green-900/20 to-slate-900/50 rounded-xl p-6 border border-green-700/30">
@@ -1341,118 +1971,150 @@ function openModal(item) {
             <div class="flex items-center gap-3 mb-3">
               <h3 class="text-lg font-bold text-white">Funding Overview</h3>
               <span class="px-3 py-1 rounded-full bg-green-600/20 text-green-400 text-xs font-bold border border-green-600/30">
-                Score: ${item.funding?.cashScore || 'N/A'}/5
+                Score: ${safe(item.funding?.cashScore)}/5
               </span>
             </div>
-            <p class="text-sm text-slate-300 leading-relaxed mb-3">${item.funding?.summary || 'No funding information'}</p>
-            <p class="text-sm text-slate-400 leading-relaxed">${item.funding?.details || ''}</p>
+            <p class="text-sm text-slate-300 leading-relaxed mb-2">${safe(item.funding?.summary)}</p>
+            <p class="text-xs text-slate-400 leading-relaxed">${safe(item.funding?.details)}</p>
           </div>
         </div>
       </div>
-      
-      ${item.funding?.links?.length ? `
-        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Funding Resources</h4>
-          <div class="flex flex-wrap gap-2">
-            ${item.funding.links.map(l => `
-              <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600/10 text-green-400 hover:bg-green-600 hover:text-white text-sm font-medium transition-all border border-green-600/20">
-                ${l.label}
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            `).join('')}
-          </div>
+
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Rounds</h4>
+        <div class="overflow-hidden rounded-lg border border-slate-700/50">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-900/70">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Date</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Type</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Amount</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Source</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Notes</th>
+              </tr>
+            </thead>
+            <tbody>${roundRows}</tbody>
+          </table>
         </div>
-      ` : ''}
+      </div>
+
+      ${(item.funding?.financials || []).length ? `
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Financials & Guidance</h4>
+        <ul class="space-y-2">
+          ${item.funding.financials.map(f => `<li class="text-sm text-slate-300">• ${f.period} — <a href="${f.link}" target="_blank" class="text-indigo-400 hover:text-indigo-300">${f.date}</a> — ${safe(f.highlights)}</li>`).join('')}
+        </ul>
+      </div>` : ''}
+
+      ${(item.funding?.links || []).length ? `
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Funding Resources</h4>
+        <div class="flex flex-wrap gap-2">
+          ${item.funding.links.map(l => `
+            <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-600/10 text-green-400 hover:bg-green-600 hover:text-white text-sm font-medium transition-all border border-green-600/20">
+              ${l.label}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>`).join('')}
+        </div>
+      </div>` : ''}
     </div>
   `;
 
-  // Continue similar pattern for remaining tabs...
+  // ---- TAB: PUBLICATIONS ----
   $('#tab-publications').innerHTML = `
     <div class="space-y-6">
       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-        <p class="text-sm text-slate-300">${item.publications?.summary || 'No publications available'}</p>
+        <p class="text-sm text-slate-300">${safe(item.publications?.summary)}</p>
       </div>
-      ${item.publications?.list?.length ? `
-        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Publications</h4>
-          <ul class="space-y-3">
-            ${item.publications.list.map(p => `
-              <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
-                <a href="${p.url}" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-start gap-2">
-                  <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <span>${p.label}</span>
-                </a>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
-      ` : ''}
+      ${(item.publications?.list || []).length ? `
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Publications</h4>
+        <ul class="space-y-3">
+          ${item.publications.list.map(p => `
+            <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+              <div class="font-medium text-white text-sm">${safe(p.label)}</div>
+              <div class="text-xs text-slate-400 mb-1">${safe(p.journal)}</div>
+              <p class="text-sm text-slate-300">${safe(p.summary)}</p>
+              <a href="${p.url}" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300 mt-2 inline-block">Source →</a>
+            </li>`).join('')}
+        </ul>
+      </div>` : ''}
     </div>
   `;
+
+  // ---- TAB: PATENTS ----
+  const patRows = (item.patents?.families || []).map(f => `
+    <tr class="border-t border-slate-700/40">
+      <td class="px-4 py-2 text-xs text-slate-300 font-mono">${safe(f.pubNo)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(f.title)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(f.priority)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${(f.jurisdictions||[]).join(', ')}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${safe(f.status)}</td>
+      <td class="px-4 py-2 text-xs text-slate-300">${(f.keyClaims||[]).map(k=>`<div>• ${k}</div>`).join('')}</td>
+      <td class="px-4 py-2 text-xs"><a href="${safe(f.link,'#')}" target="_blank" class="text-indigo-400 hover:text-indigo-300">Open →</a></td>
+    </tr>
+  `).join('') || '<tr><td class="px-4 py-2 text-xs text-slate-500" colspan="7">No patent families listed</td></tr>';
 
   $('#tab-patents').innerHTML = `
     <div class="space-y-6">
       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-        <p class="text-sm text-slate-300">${item.patents?.summary || 'No patent information available'}</p>
+        <p class="text-sm text-slate-300">${safe(item.patents?.summary)}</p>
       </div>
-      ${item.patents?.links?.length ? `
-        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Patent Resources</h4>
-          <div class="flex flex-wrap gap-2">
-            ${item.patents.links.map(l => `
-              <a href="${l.url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white text-xs font-medium transition-all">
-                ${l.label}
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            `).join('')}
-          </div>
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Families</h4>
+        <div class="overflow-x-auto rounded-lg border border-slate-700/50">
+          <table class="min-w-full text-sm">
+            <thead class="bg-slate-900/70">
+              <tr>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Publication</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Title</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Priority</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Jurisdictions</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Status</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Key Claims</th>
+                <th class="px-4 py-2 text-left text-xs text-slate-400">Link</th>
+              </tr>
+            </thead>
+            <tbody>${patRows}</tbody>
+          </table>
         </div>
-      ` : ''}
+      </div>
+      ${(item.patents?.links || []).length ? `
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Resources</h4>
+        <div class="flex flex-wrap gap-2">
+          ${item.patents.links.map(l => `<a href="${l.url}" target="_blank" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white border border-indigo-600/20">${l.label}</a>`).join('')}
+        </div>
+      </div>` : ''}
     </div>
   `;
+
+  // ---- TAB: NEWS ----
+  const newsItems = (item.news?.list || []).map(n => `
+    <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+      <div class="text-white text-sm font-medium">${safe(n.label)}</div>
+      <div class="text-xs text-slate-500">${safe(n.date)}</div>
+      <p class="text-sm text-slate-300 mt-1">${safe(n.snippet)}</p>
+      <a href="${safe(n.url,'#')}" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300 mt-2 inline-block">Read →</a>
+    </li>
+  `).join('') || '<li class="text-sm text-slate-500">No news items</li>';
 
   $('#tab-news').innerHTML = `
     <div class="space-y-6">
       <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-        <p class="text-sm text-slate-300 mb-4">${item.news?.summary || 'No news available'}</p>
+        <p class="text-sm text-slate-300">${safe(item.news?.summary)}</p>
       </div>
-      ${item.news?.list?.length ? `
-        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">News Articles</h4>
-          <ul class="space-y-3">
-            ${item.news.list.map(n => `
-              <li class="p-3 rounded-lg bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
-                <a href="${n.url}" target="_blank" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-start gap-2">
-                  <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
-                  <span>${n.label}</span>
-                </a>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
-      ` : ''}
-      ${item.citations?.length ? `
-        <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
-          <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Key Citations</h4>
-          <ul class="space-y-2">
-            ${item.citations.map(c => `
-              <li>
-                <a href="${c.url}" target="_blank" class="text-xs text-slate-400 hover:text-indigo-300 transition-colors">${c.label} →</a>
-              </li>
-            `).join('')}
-          </ul>
-        </div>
-      ` : ''}
+      <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-700/50">
+        <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Articles</h4>
+        <ul class="space-y-3">${newsItems}</ul>
+      </div>
     </div>
   `;
+
+
+
 
   $('#tab-databases').innerHTML = `
     <div class="space-y-6">
