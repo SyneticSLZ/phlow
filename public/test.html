@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phlow - Comprehensive Phase 1 Discovery Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-border {
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            padding: 2px;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .modal-backdrop {
+            backdrop-filter: blur(8px);
+        }
+        .score-ring {
+            transform: rotate(-90deg);
+            transform-origin: center;
+        }
+        .molecule-card {
+            transition: all 0.3s ease;
+        }
+        .molecule-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .drug-pipeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .drug-pipeline::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #3B82F6, #8B5CF6);
+        }
+        .lipinski-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .lipinski-pass { background: #10B981; }
+        .lipinski-warning { background: #F59E0B; }
+        .lipinski-fail { background: #EF4444; }
+        .news-card {
+            transition: all 0.3s ease;
+        }
+        .news-card:hover {
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <!-- Enhanced Header -->
+    <header class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-6">
+                    <div class="gradient-border rounded-lg">
+                        <div class="bg-white rounded-md px-4 py-2">
+                            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Phlow
+                            </h1>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Advanced CDMO Lead Discovery</p>
+                        <p class="text-xs text-gray-400">Real-time Intelligence Platform</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500">Data Sources Active</p>
+                        <div class="flex space-x-1 mt-1">
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="ClinicalTrials.gov"></span>
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="PubChem"></span>
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="Patents"></span>
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="News RSS"></span>
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="GPT-4"></span>
+                            <span class="w-2 h-2 bg-green-400 rounded-full" title="Hunter.io"></span>
+                        </div>
+                    </div>
+                    <button onclick="runFullDiscovery()" class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition duration-200 font-medium">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Run Full Discovery
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Enhanced Stats Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+            <!-- Total Companies Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Companies</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="totalCompanies">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="text-green-600 font-medium">↑ <span id="newCompanies">0</span></span>
+                            <span class="text-gray-400 ml-1">this week</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M12 7h.01M12 11h.01M12 15h.01"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hot Prospects Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-green-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Hot Prospects</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="tierACount">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full font-medium">Tier A</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Trials Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Phase 1 Trials</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="phase1Count">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="text-purple-600 font-medium" id="recruitingCount">0</span>
+                            <span class="text-gray-400 ml-1">recruiting</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Molecules Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-indigo-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Molecules</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="moleculeCount">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="text-indigo-600 font-medium" id="drugLikeCount">0</span>
+                            <span class="text-gray-400 ml-1">drug-like</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-indigo-50 rounded-lg">
+                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patents Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Patents</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="patentCount">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="text-yellow-600 font-medium" id="recentPatents">0</span>
+                            <span class="text-gray-400 ml-1">recent</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-yellow-50 rounded-lg">
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CDMO Opportunities Card -->
+            <div class="bg-white rounded-xl shadow-lg p-6 border-t-4 border-orange-500">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">CDMO Ready</p>
+                        <p class="mt-2 text-3xl font-bold text-gray-900" id="needCDMOCount">0</p>
+                        <div class="mt-2 flex items-center text-xs">
+                            <span class="text-orange-600 font-medium" id="fundedCount">0</span>
+                            <span class="text-gray-400 ml-1">funded</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-orange-50 rounded-lg">
+                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Discovery Actions -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Data Discovery & Analysis</h2>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-gray-500">Last scan:</span>
+                    <span class="text-xs text-gray-700" id="lastScanTime">Never</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <button onclick="fetchClinicalTrials()" class="group relative px-4 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">Clinical Trials</span>
+                        <span class="text-xs opacity-75">Phase 1</span>
+                    </div>
+                </button>
+
+                <button onclick="fetchPubChemData()" class="group relative px-4 py-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">PubChem</span>
+                        <span class="text-xs opacity-75">Molecules</span>
+                    </div>
+                </button>
+
+                <button onclick="scanNews()" class="group relative px-4 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">News</span>
+                        <span class="text-xs opacity-75">RSS Scan</span>
+                    </div>
+                </button>
+
+                <button onclick="searchPatents()" class="group relative px-4 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">Patents</span>
+                        <span class="text-xs opacity-75">USPTO</span>
+                    </div>
+                </button>
+
+                <button onclick="discoverFunding()" class="group relative px-4 py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">Funding</span>
+                        <span class="text-xs opacity-75">Discovery</span>
+                    </div>
+                </button>
+
+                <button onclick="enrichTopCompanies()" class="group relative px-4 py-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:shadow-xl transition-all duration-200">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-6 h-6 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        <span class="font-semibold text-sm">AI Enrich</span>
+                        <span class="text-xs opacity-75">Top 10</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- News Feed Panel -->
+        <div id="newsPanel" class="bg-white rounded-xl shadow-lg p-6 mb-8 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-gray-900">Latest News & Events</h2>
+                <button onclick="toggleNewsPanel()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="newsFeed" class="space-y-3 max-h-96 overflow-y-auto">
+                <!-- News items will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">Advanced Filters</h2>
+            <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+                <select id="tierFilter" class="rounded-lg border-gray-300 text-sm">
+                    <option value="">All Tiers</option>
+                    <option value="A">Tier A - Hot (70+)</option>
+                    <option value="B">Tier B - Warm (50-69)</option>
+                    <option value="C">Tier C - Cold (<50)</option>
+                </select>
+                
+                <select id="clinicTimeFilter" class="rounded-lg border-gray-300 text-sm">
+                    <option value="">Time in Clinic</option>
+                    <option value="new">< 1 year (Fresh)</option>
+                    <option value="moderate">1-3 years</option>
+                    <option value="lingering">3-5 years (Lingering)</option>
+                    <option value="stale">> 5 years (Stale)</option>
+                </select>
+                
+                <select id="fundingFilter" class="rounded-lg border-gray-300 text-sm">
+                    <option value="">All Funding</option>
+                    <option value="funded">Recently Funded</option>
+                    <option value="50m">$50M+</option>
+                    <option value="100m">$100M+</option>
+                </select>
+                
+                <select id="cdmoFilter" class="rounded-lg border-gray-300 text-sm">
+                    <option value="">CDMO Status</option>
+                    <option value="needs">Needs CDMO</option>
+                    <option value="has">Has Manufacturing</option>
+                    <option value="uncertain">Uncertain</option>
+                </select>
+                
+                <select id="employeeFilter" class="rounded-lg border-gray-300 text-sm">
+                    <option value="">Employee Count</option>
+                    <option value="1-50">1-50 (Small)</option>
+                    <option value="51-250">51-250 (Medium)</option>
+                    <option value="251-500">251-500</option>
+                    <option value="500+">500+</option>
+                </select>
+                
+                <input type="text" id="searchFilter" placeholder="Search companies, molecules..." class="rounded-lg border-gray-300 text-sm">
+                
+                <button onclick="applyFilters()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition text-sm font-medium">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Enhanced Company Table -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900">Target Company Pipeline</h2>
+                        <p class="text-sm text-gray-500 mt-1">Companies entering IND-enabling manufacturing</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="exportToCSV()" class="px-4 py-2 text-sm bg-white border rounded-lg hover:bg-gray-50 transition">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score/Tier</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time in Clinic</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Molecules</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Funding</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employees</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Contacts</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturing</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="companyTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-4 bg-gray-50 border-t">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span id="totalResults">0</span> results
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="previousPage()" class="px-3 py-1 text-sm bg-white border rounded-lg hover:bg-gray-50">Previous</button>
+                        <span id="pageNumbers" class="flex space-x-1"></span>
+                        <button onclick="nextPage()" class="px-3 py-1 text-sm bg-white border rounded-lg hover:bg-gray-50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Company Detail Modal -->
+    <div id="companyModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 modal-backdrop hidden z-50 overflow-y-auto">
+        <div class="flex items-start justify-center min-h-screen p-4 pt-20">
+            <div class="bg-white rounded-2xl max-w-7xl w-full shadow-2xl">
+                <!-- Modal Header -->
+                <div class="sticky top-0 bg-white border-b px-8 py-6 rounded-t-2xl z-10">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 id="modalCompanyName" class="text-3xl font-bold text-gray-900"></h2>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <span id="modalCompanyType" class="text-sm text-gray-500"></span>
+                                <span id="modalCompanyLocation" class="text-sm text-gray-500"></span>
+                                <span id="modalLastEnriched" class="text-sm text-gray-400"></span>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Navigation Tabs -->
+                    <div class="flex space-x-1 mt-6 border-b overflow-x-auto">
+                        <button id="tab-overview" onclick="switchTab('overview')" class="tab-btn px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap">Overview</button>
+                        <button id="tab-trials" onclick="switchTab('trials')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Clinical Trials</button>
+                        <button id="tab-molecules" onclick="switchTab('molecules')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Molecules</button>
+                        <button id="tab-funding" onclick="switchTab('funding')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Funding</button>
+                        <button id="tab-team" onclick="switchTab('team')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Team</button>
+                        <button id="tab-patents" onclick="switchTab('patents')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Patents</button>
+                        <button id="tab-news" onclick="switchTab('news')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">News</button>
+                        <button id="tab-manufacturing" onclick="switchTab('manufacturing')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">Manufacturing</button>
+                        <button id="tab-analysis" onclick="switchTab('analysis')" class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">AI Analysis</button>
+                    </div>
+                </div>
+                
+                <!-- Modal Content -->
+                <div id="modalContent" class="overflow-y-auto p-8" style="max-height: calc(100vh - 250px);">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 max-w-sm w-full">
+            <div class="flex flex-col items-center">
+                <div class="relative">
+                    <div class="w-20 h-20 border-4 border-gray-200 rounded-full"></div>
+                    <div class="w-20 h-20 border-4 border-blue-500 rounded-full animate-spin absolute top-0 left-0 border-t-transparent"></div>
+                </div>
+                <p id="loadingText" class="mt-4 text-gray-700 font-medium">Loading...</p>
+                <p id="loadingDetail" class="mt-2 text-sm text-gray-500 text-center"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // Global variables
+        const API_BASE = '/api';
+        let currentPage = 1;
+        let currentFilters = {};
+        let currentView = 'table';
+        let currentCompanyData = null;
+        let currentTab = 'overview';
+        let latestNews = [];
+        let allCompanies = [];
+
+        // Initialize dashboard
+        async function init() {
+            await loadStats();
+            await loadCompanies();
+            updateLastScanTime();
+        }
+
+        // Enhanced loading states
+        function showLoading(message = 'Loading...', detail = '') {
+            document.getElementById('loadingText').textContent = message;
+            document.getElementById('loadingDetail').textContent = detail;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        // Enhanced notifications
+        function showNotification(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            
+            const bgColor = {
+                'success': 'bg-green-500',
+                'error': 'bg-red-500',
+                'warning': 'bg-yellow-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-gray-500';
+            
+            notification.className = `${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 transform transition-all duration-300 translate-x-full`;
+            
+            const icon = {
+                'success': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>',
+                'error': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>',
+                'warning': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path>',
+                'info': '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01"></path>'
+            }[type];
+            
+            notification.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${icon}
+                </svg>
+                <div class="flex-1">
+                    <p class="font-medium">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+                notification.classList.add('translate-x-0');
+            }, 100);
+            
+            // Auto remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+
+        // Load comprehensive stats
+        async function loadStats() {
+            try {
+                const response = await axios.get(`${API_BASE}/stats`);
+                const stats = response.data;
+                
+                // Update all stat cards
+                document.getElementById('totalCompanies').textContent = stats.companies || 0;
+                document.getElementById('tierACount').textContent = stats.tierA || 0;
+                document.getElementById('phase1Count').textContent = stats.phase1Trials || 0;
+                document.getElementById('moleculeCount').textContent = stats.molecules || 0;
+                document.getElementById('needCDMOCount').textContent = stats.needsCDMO || 0;
+                document.getElementById('patentCount').textContent = stats.patents || 0;
+                
+                // Update sub-stats
+                document.getElementById('newCompanies').textContent = stats.recentActivity?.companies || 0;
+                document.getElementById('recruitingCount').textContent = stats.recruitingTrials || 0;
+                document.getElementById('drugLikeCount').textContent = stats.drugLikeMolecules || 0;
+                document.getElementById('fundedCount').textContent = stats.fundedCompanies || 0;
+                document.getElementById('recentPatents').textContent = stats.recentPatents || 0;
+                
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load and display companies with enhanced data
+        async function loadCompanies() {
+            try {
+                const params = {
+                    page: currentPage,
+                    limit: 25,
+                    ...currentFilters
+                };
+                
+                const response = await axios.get(`${API_BASE}/companies`, { params });
+                const data = response.data;
+                allCompanies = data.companies;
+                
+                displayCompaniesTable(data.companies);
+                updatePagination(data.pagination);
+            } catch (error) {
+                console.error('Error loading companies:', error);
+                showNotification('Failed to load companies', 'error');
+            }
+        }
+
+        // Enhanced company table display with all required fields
+        function displayCompaniesTable(companies) {
+            const tbody = document.getElementById('companyTableBody');
+            
+            if (companies.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="px-6 py-20 text-center">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"></path>
+                                </svg>
+                                <p class="text-gray-500 text-lg font-medium">No companies found</p>
+                                <p class="text-gray-400 text-sm mt-2">Start by fetching data from Clinical Trials or PubChem</p>
+                                <div class="flex space-x-3 mt-6">
+                                    <button onclick="fetchClinicalTrials()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                        Fetch Clinical Trials
+                                    </button>
+                                    <button onclick="fetchPubChemData()" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">
+                                        Fetch PubChem
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = companies.map(company => {
+                const score = company.score || {};
+                const tier = score.priorityTier || '-';
+                const tierColor = {
+                    'A': 'bg-green-100 text-green-800 border-green-300',
+                    'B': 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                    'C': 'bg-gray-100 text-gray-600 border-gray-300'
+                }[tier] || 'bg-gray-100 text-gray-600';
+                
+                // Calculate time in clinic
+                const timeInClinic = calculateTimeInClinic(company);
+                const clinicTimeColor = getClinicTimeColor(timeInClinic);
+                
+                const fundingAmount = company.lastFunding?.amountUSD 
+                    ? `$${(company.lastFunding.amountUSD / 1000000).toFixed(1)}M`
+                    : '-';
+                
+                const fundingDate = company.lastFunding?.date
+                    ? new Date(company.lastFunding.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                    : '';
+                
+                const manufacturingStatus = company.hasInternalGMP === false 
+                    ? '<span class="text-orange-600 font-medium">Needs CDMO</span>'
+                    : company.hasInternalGMP === true
+                    ? '<span class="text-gray-500">Has GMP</span>'
+                    : '<span class="text-gray-400">Unknown</span>';
+                
+                // Get key contacts
+                const keyContacts = company.contacts?.filter(c => 
+                    /CEO|CFO|COO|President|VP|Director/i.test(c.title || '')
+                ) || [];
+                
+                const dataCompleteness = company.lastEnriched 
+                    ? '<span class="w-2 h-2 bg-green-400 rounded-full inline-block" title="Enriched"></span>'
+                    : '<span class="w-2 h-2 bg-gray-300 rounded-full inline-block" title="Not enriched"></span>';
+                
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors cursor-pointer" onclick="viewCompany('${company._id}')">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                ${dataCompleteness}
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">${company.name}</div>
+                                    <div class="text-xs text-gray-500">${company.headquarters || company.country || 'Location unknown'}</div>
+                                    ${company.website ? `<a href="${company.website}" target="_blank" class="text-xs text-blue-600 hover:underline" onclick="event.stopPropagation()">Website →</a>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-gray-900">${score.overallScore || 0}</div>
+                                    <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full border ${tierColor}">
+                                        Tier ${tier}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <span class="font-medium ${clinicTimeColor}">${timeInClinic}</span>
+                                ${score.isStale ? '<div class="text-xs text-red-600">⚠ Lingering</div>' : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div class="font-medium">${company.moleculeCount || 0}</div>
+                                ${company.drugLikeCount ? `<div class="text-xs text-green-600">${company.drugLikeCount} drug-like</div>` : ''}
+                                ${company.phase1Count > 0 ? `<div class="text-xs text-purple-600">Phase 1 (${company.phase1Count})</div>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div class="font-medium">${fundingAmount}</div>
+                                <div class="text-xs text-gray-500">${fundingDate}</div>
+                                ${company.fundingCount > 0 ? `<div class="text-xs text-blue-600">${company.fundingCount} rounds</div>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div class="font-medium">${company.employeeBand || company.employeeCount || '-'}</div>
+                                ${company.employeeCount && company.employeeCount <= 50 ? '<div class="text-xs text-green-600">Small (High CDMO need)</div>' : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            ${keyContacts.length > 0 ? `
+                                <div>
+                                    <div class="font-medium">${keyContacts[0].name}</div>
+                                    <div class="text-xs text-gray-600">${keyContacts[0].title}</div>
+                                    ${keyContacts.length > 1 ? `<div class="text-xs text-blue-600">+${keyContacts.length - 1} more</div>` : ''}
+                                </div>
+                            ` : company.contactCount > 0 ? `
+                                <div class="text-xs text-blue-600">${company.contactCount} contacts</div>
+                            ` : `
+                                <div class="text-xs text-gray-400">No contacts</div>
+                            `}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            ${manufacturingStatus}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <button onclick="event.stopPropagation(); viewCompany('${company._id}')" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    View
+                                </button>
+                                <button onclick="event.stopPropagation(); enrichCompany('${company._id}', '${company.name}')" class="text-green-600 hover:text-green-800 font-medium">
+                                    Enrich
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Calculate time in clinic
+        function calculateTimeInClinic(company) {
+            if (!company.firstTrialDate && !company.oldestTrialDate) return 'Preclinical';
+            
+            const startDate = company.firstTrialDate || company.oldestTrialDate;
+            const years = Math.floor((Date.now() - new Date(startDate)) / (365 * 24 * 60 * 60 * 1000));
+            
+            if (years === 0) return '< 1 year';
+            if (years === 1) return '1 year';
+            return `${years} years`;
+        }
+
+        function getClinicTimeColor(timeString) {
+            if (timeString.includes('Preclinical')) return 'text-gray-500';
+            if (timeString.includes('< 1') || timeString === '1 year') return 'text-green-600';
+            if (timeString.includes('2') || timeString.includes('3')) return 'text-yellow-600';
+            return 'text-red-600'; // 3+ years is lingering
+        }
+
+        // Fetch clinical trials with comprehensive data
+        async function fetchClinicalTrials() {
+            try {
+                showLoading('Fetching Clinical Trials', 'Retrieving Phase 1 and Early Phase trials with full data...');
+                
+                const response = await axios.post(`${API_BASE}/trials/fetch`, {
+                    sinceDays: 90,
+                    maxResults: 200
+                });
+                
+                hideLoading();
+                
+                showNotification(
+                    `Found ${response.data.trialsAdded} new trials from ${response.data.companiesProcessed} companies`,
+                    'success'
+                );
+                
+                await loadStats();
+                await loadCompanies();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error fetching trials:', error);
+                showNotification('Failed to fetch clinical trials', 'error');
+            }
+        }
+
+        // Fetch PubChem data with molecular details
+        async function fetchPubChemData() {
+            try {
+                showLoading('Fetching PubChem Data', 'Discovering new molecules and assessing drug-likeness...');
+                
+                const response = await axios.post(`${API_BASE}/pubchem/fetch`, {
+                    days: 7,
+                    limit: 100
+                });
+                
+                hideLoading();
+                
+                showNotification(
+                    `Discovered ${response.data.moleculesAdded} molecules from ${response.data.companiesProcessed} companies`,
+                    'success'
+                );
+                
+                await loadStats();
+                await loadCompanies();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error fetching PubChem:', error);
+                showNotification('Failed to fetch PubChem data', 'error');
+            }
+        }
+
+        // Scan news feeds
+        async function scanNews() {
+            try {
+                showLoading('Scanning News Feeds', 'Searching for funding announcements and company updates...');
+                
+                const response = await axios.post(`${API_BASE}/news/scan`, {
+                    keywords: [],
+                    categories: []
+                });
+                
+                hideLoading();
+                
+                latestNews = response.data.articles || [];
+                
+                showNotification(
+                    `Found ${response.data.articlesFound} articles, discovered ${response.data.companiesDiscovered.length} companies`,
+                    'success'
+                );
+                
+                // Show news panel with results
+                displayNews(latestNews.slice(0, 20));
+                document.getElementById('newsPanel').classList.remove('hidden');
+                
+                await loadStats();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error scanning news:', error);
+                showNotification('Failed to scan news feeds', 'error');
+            }
+        }
+
+        // Search patents
+        async function searchPatents() {
+            try {
+                showLoading('Searching Patents', 'Searching USPTO, EPO, and WIPO databases...');
+                
+                // Get top companies to search patents for
+                const companies = allCompanies.slice(0, 10);
+                let totalPatents = 0;
+                
+                for (const company of companies) {
+                    try {
+                        const response = await axios.post(`${API_BASE}/patents/search`, {
+                            companyName: company.name,
+                            companyId: company._id,
+                            sinceDays: 365
+                        });
+                        totalPatents += response.data.relevant || 0;
+                    } catch (err) {
+                        console.error(`Failed to search patents for ${company.name}:`, err);
+                    }
+                }
+                
+                hideLoading();
+                
+                showNotification(
+                    `Found ${totalPatents} relevant patents for top companies`,
+                    'success'
+                );
+                
+                await loadStats();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error searching patents:', error);
+                showNotification('Failed to search patents', 'error');
+            }
+        }
+
+        // Discover funding
+        async function discoverFunding() {
+            try {
+                showLoading('Discovering Funding', 'Searching SEC, Crunchbase, and news sources...');
+                
+                // Get top companies without recent funding
+                const companies = allCompanies.filter(c => !c.lastFunding).slice(0, 5);
+                let totalFunding = 0;
+                
+                for (const company of companies) {
+                    try {
+                        const response = await axios.post(`${API_BASE}/funding/discover`, {
+                            companyName: company.name
+                        });
+                        totalFunding += response.data.rounds || 0;
+                    } catch (err) {
+                        console.error(`Failed to discover funding for ${company.name}:`, err);
+                    }
+                }
+                
+                hideLoading();
+                
+                showNotification(
+                    `Discovered ${totalFunding} funding rounds`,
+                    'success'
+                );
+                
+                await loadCompanies();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error discovering funding:', error);
+                showNotification('Failed to discover funding', 'error');
+            }
+        }
+
+        // Run full discovery pipeline
+        async function runFullDiscovery() {
+            try {
+                showLoading('Running Full Discovery Pipeline', 'This will take several minutes...');
+                
+                const response = await axios.post(`${API_BASE}/discovery/run-full`);
+                
+                hideLoading();
+                
+                const discovered = response.data.discovered;
+                showNotification(
+                    `Discovery complete: ${discovered.companies} companies, ${discovered.trials} trials, ${discovered.molecules} molecules, ${discovered.patents} patents, ${discovered.funding} funding rounds`,
+                    'success',
+                    8000
+                );
+                
+                await loadStats();
+                await loadCompanies();
+                updateLastScanTime();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error running full discovery:', error);
+                showNotification('Failed to run full discovery', 'error');
+            }
+        }
+
+        // Enrich single company with AI
+        async function enrichCompany(companyId, companyName) {
+            try {
+                showLoading(`Enriching ${companyName}`, 'Using AI to gather funding, contacts, pipeline, and manufacturing data...');
+                
+                const response = await axios.post(`${API_BASE}/companies/${companyId}/enrich-funding`);
+                
+                hideLoading();
+                
+                const summary = response.data.enrichmentSummary;
+                
+                // Always show the result, even if nothing was found
+                let message = `Enrichment complete for ${companyName}: `;
+                
+                if (summary.fundingAdded || summary.contactsAdded || summary.eventsAdded) {
+                    const parts = [];
+                    if (summary.fundingAdded > 0) parts.push(`${summary.fundingAdded} funding rounds`);
+                    if (summary.contactsAdded > 0) parts.push(`${summary.contactsAdded} contacts`);
+                    if (summary.eventsAdded > 0) parts.push(`${summary.eventsAdded} events`);
+                    message += parts.join(', ');
+                } else {
+                    message += 'No new data found (company may be too small or private)';
+                }
+                
+                showNotification(message, summary.fundingAdded || summary.contactsAdded ? 'success' : 'warning');
+                
+                await loadCompanies();
+                
+                // If modal is open for this company, refresh it
+                if (currentCompanyData && currentCompanyData.company._id === companyId) {
+                    await viewCompany(companyId);
+                }
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error enriching company:', error);
+                showNotification(`Failed to enrich ${companyName}: ${error.response?.data?.error || 'Unknown error'}`, 'error');
+            }
+        }
+
+        // Enrich top companies
+        async function enrichTopCompanies() {
+            try {
+                showLoading('AI Enrichment', 'Enriching top 10 companies with comprehensive data...');
+                
+                const response = await axios.get(`${API_BASE}/companies?limit=10&sortBy=score`);
+                const topCompanies = response.data.companies;
+                
+                let enriched = 0;
+                let totalContacts = 0;
+                let totalFunding = 0;
+                
+                for (const company of topCompanies) {
+                    try {
+                        const result = await axios.post(`${API_BASE}/companies/${company._id}/enrich-funding`);
+                        enriched++;
+                        totalContacts += result.data.enrichmentSummary?.contactsAdded || 0;
+                        totalFunding += result.data.enrichmentSummary?.fundingAdded || 0;
+                    } catch (err) {
+                        console.error(`Failed to enrich ${company.name}:`, err);
+                    }
+                }
+                
+                hideLoading();
+                showNotification(
+                    `Enriched ${enriched} companies: ${totalContacts} contacts, ${totalFunding} funding rounds`,
+                    'success'
+                );
+                await loadCompanies();
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error enriching companies:', error);
+                showNotification('Failed to enrich companies', 'error');
+            }
+        }
+
+        // Display news
+        function displayNews(articles) {
+            const feed = document.getElementById('newsFeed');
+            
+            if (articles.length === 0) {
+                feed.innerHTML = '<p class="text-gray-500">No recent news found</p>';
+                return;
+            }
+            
+            feed.innerHTML = articles.map(article => {
+                const typeColors = {
+                    'funding': 'bg-green-100 text-green-800',
+                    'clinical_trial': 'bg-purple-100 text-purple-800',
+                    'regulatory': 'bg-blue-100 text-blue-800',
+                    'partnership': 'bg-yellow-100 text-yellow-800',
+                    'm&a': 'bg-red-100 text-red-800',
+                    'patent': 'bg-indigo-100 text-indigo-800'
+                };
+                
+                return `
+                    <div class="news-card bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-medium text-sm text-gray-900 flex-1">${article.title}</h4>
+                            <span class="text-xs text-gray-500 ml-2">${new Date(article.pubDate).toLocaleDateString()}</span>
+                        </div>
+                        ${article.analysis?.fundingAmount ? `
+                            <div class="mb-2">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                    $${(article.analysis.fundingAmount / 1000000).toFixed(1)}M ${article.analysis.fundingRound || ''}
+                                </span>
+                            </div>
+                        ` : ''}
+                        ${article.analysis?.companies?.length > 0 ? `
+                            <div class="mb-2 flex flex-wrap gap-1">
+                                ${article.analysis.companies.slice(0, 3).map(c => `
+                                    <span class="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded">${c}</span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        ${article.analysis?.types?.length > 0 ? `
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                ${article.analysis.types.map(type => `
+                                    <span class="px-2 py-1 text-xs rounded-full ${typeColors[type] || 'bg-gray-100 text-gray-800'}">${type}</span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <a href="${article.link}" target="_blank" class="text-xs text-blue-600 hover:underline">
+                            Read more at ${article.source} →
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleNewsPanel() {
+            document.getElementById('newsPanel').classList.toggle('hidden');
+        }
+
+        // View comprehensive company details
+        async function viewCompany(companyId) {
+            try {
+                showLoading('Loading Company Details', 'Fetching comprehensive data...');
+                
+                const response = await axios.get(`${API_BASE}/companies/${companyId}`);
+                currentCompanyData = response.data;
+                
+                hideLoading();
+                displayCompanyModal(currentCompanyData);
+                
+            } catch (error) {
+                hideLoading();
+                console.error('Error loading company:', error);
+                showNotification('Failed to load company details', 'error');
+            }
+        }
+
+        // Display comprehensive company modal
+        function displayCompanyModal(data) {
+            const company = data.company;
+            const score = data.score || {};
+            
+            // Update modal header
+            document.getElementById('modalCompanyName').textContent = company.name;
+            document.getElementById('modalCompanyType').textContent = company.entityType === 'individual' ? 'Individual' : 'Company';
+            document.getElementById('modalCompanyLocation').textContent = company.headquarters || company.country || 'Location unknown';
+            document.getElementById('modalLastEnriched').textContent = company.lastEnriched 
+                ? `Last enriched: ${new Date(company.lastEnriched).toLocaleDateString()}`
+                : 'Not yet enriched';
+            
+            // Reset tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            document.getElementById('tab-overview').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            
+            // Display overview by default
+            currentTab = 'overview';
+            switchTab('overview');
+            
+            // Show modal
+            document.getElementById('companyModal').classList.remove('hidden');
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-600');
+                activeBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            }
+            
+            // Display content based on tab
+            switch(tab) {
+                case 'overview':
+                    displayOverviewTab();
+                    break;
+                case 'trials':
+                    displayTrialsTab();
+                    break;
+                case 'molecules':
+                    displayMoleculesTab();
+                    break;
+                case 'funding':
+                    displayFundingTab();
+                    break;
+                case 'team':
+                    displayTeamTab();
+                    break;
+                case 'patents':
+                    displayPatentsTab();
+                    break;
+                case 'news':
+                    displayNewsTab();
+                    break;
+                case 'manufacturing':
+                    displayManufacturingTab();
+                    break;
+                case 'analysis':
+                    displayAnalysisTab();
+                    break;
+            }
+        }
+
+        // Display overview tab
+        function displayOverviewTab() {
+            const data = currentCompanyData;
+            const company = data.company;
+            const score = data.score || {};
+            
+            const timeInClinic = calculateTimeInClinic(company);
+            
+            const content = document.getElementById('modalContent');
+            content.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column - Company Info & Scoring -->
+                    <div class="space-y-6">
+                        <!-- Company Information -->
+                        <div class="bg-gray-50 rounded-xl p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Company Information</h3>
+                            <dl class="space-y-3">
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Founded</dt>
+                                    <dd class="text-sm text-gray-900">${company.foundedYear || 'Unknown'}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Employees</dt>
+                                    <dd class="text-sm text-gray-900">${company.employeeBand || company.employeeCount || 'Unknown'}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Time in Clinic</dt>
+                                    <dd class="text-sm font-medium ${getClinicTimeColor(timeInClinic)}">${timeInClinic}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Headquarters</dt>
+                                    <dd class="text-sm text-gray-900">${company.headquarters || company.country || 'Unknown'}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Website</dt>
+                                    <dd class="text-sm text-gray-900">
+                                        ${company.website ? `<a href="${company.website}" target="_blank" class="text-blue-600 hover:underline">${company.domain || 'Visit website'}</a>` : 'Not available'}
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                        
+                        <!-- CDMO Scoring -->
+                        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">CDMO Opportunity Score</h3>
+                            <div class="relative w-32 h-32 mx-auto mb-4">
+                                <svg class="w-32 h-32 transform -rotate-90">
+                                    <circle cx="64" cy="64" r="56" stroke="#E5E7EB" stroke-width="12" fill="none"></circle>
+                                    <circle cx="64" cy="64" r="56" stroke="url(#scoreGradient)" stroke-width="12" fill="none"
+                                            stroke-dasharray="${(score.overallScore || 0) * 3.51} 351"
+                                            stroke-linecap="round"></circle>
+                                    <defs>
+                                        <linearGradient id="scoreGradient">
+                                            <stop offset="0%" stop-color="#3B82F6"></stop>
+                                            <stop offset="100%" stop-color="#8B5CF6"></stop>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold text-gray-900">${score.overallScore || 0}</div>
+                                        <div class="text-xs text-gray-500">/ 100</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Priority Tier</span>
+                                    <span class="font-bold ${score.priorityTier === 'A' ? 'text-green-600' : score.priorityTier === 'B' ? 'text-yellow-600' : 'text-gray-600'}">
+                                        ${score.priorityTier || '-'}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Needs CDMO</span>
+                                    <span class="font-bold ${score.needsCDMO ? 'text-green-600' : 'text-gray-400'}">
+                                        ${score.needsCDMO ? 'Yes' : 'No'}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Can Pay</span>
+                                    <span class="font-bold ${score.canPay ? 'text-green-600' : 'text-gray-400'}">
+                                        ${score.canPay ? 'Yes' : 'Uncertain'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Middle Column - Pipeline & Trials -->
+                    <div class="space-y-6">
+                        <!-- Pipeline Overview -->
+                        <div class="bg-white border rounded-xl p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Development Pipeline</h3>
+                            ${data.trials && data.trials.length > 0 ? `
+                                <div class="drug-pipeline space-y-4">
+                                    ${data.trials.slice(0, 3).map(trial => `
+                                        <div class="relative">
+                                            <div class="absolute left-0 top-2 w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full"></div>
+                                            <div class="ml-8">
+                                                <div class="font-medium text-sm text-gray-900">${trial.phase}</div>
+                                                <div class="text-xs text-gray-600 mt-1">${(trial.title || 'Untitled trial').substring(0, 80)}...</div>
+                                                <div class="flex items-center space-x-2 mt-2">
+                                                    <span class="px-2 py-1 text-xs rounded-full ${
+                                                        trial.status === 'Recruiting' ? 'bg-green-100 text-green-700' :
+                                                        trial.status === 'Not yet recruiting' ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-gray-100 text-gray-600'
+                                                    }">${trial.status}</span>
+                                                    ${trial.hasUSSites ? '<span class="text-xs text-blue-600">US Sites</span>' : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                ${data.trials.length > 3 ? `
+                                    <button onclick="switchTab('trials')" class="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                        View all ${data.trials.length} trials →
+                                    </button>
+                                ` : ''}
+                            ` : `
+                                <p class="text-sm text-gray-500">No clinical trials found</p>
+                            `}
+                        </div>
+                        
+                        <!-- Recent Events -->
+                        ${company.recentEvents && company.recentEvents.length > 0 ? `
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                                <h3 class="text-lg font-bold text-gray-900 mb-4">Recent Events</h3>
+                                <div class="space-y-3">
+                                    ${company.recentEvents.slice(0, 3).map(event => `
+                                        <div class="border-l-4 border-yellow-400 pl-4">
+                                            <div class="flex justify-between">
+                                                <span class="font-medium text-sm text-gray-900">${event.title}</span>
+                                                <span class="text-xs text-gray-500">${new Date(event.date).toLocaleDateString()}</span>
+                                            </div>
+                                            <p class="text-xs text-gray-600 mt-1">${event.description}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Right Column - Funding & Contacts -->
+                    <div class="space-y-6">
+                        <!-- Funding Summary -->
+                        <div class="bg-green-50 rounded-xl p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Funding History</h3>
+                            ${data.funding && data.funding.length > 0 ? `
+                                <div class="space-y-3">
+                                    ${data.funding.slice(0, 3).map(round => `
+                                        <div class="bg-white rounded-lg p-3">
+                                            <div class="flex justify-between items-center">
+                                                <div>
+                                                    <span class="font-medium text-sm">${round.roundType}</span>
+                                                    <div class="text-xs text-gray-500 mt-1">${new Date(round.date).toLocaleDateString()}</div>
+                                                </div>
+                                                <span class="font-bold text-green-700">
+                                                    ${round.amountUSD ? `$${(round.amountUSD / 1000000).toFixed(1)}M` : 'Undisclosed'}
+                                                </span>
+                                            </div>
+                                            ${round.investors?.length > 0 ? `
+                                                <div class="mt-2 text-xs text-gray-600">
+                                                    ${round.leadInvestor ? `Led by: ${round.leadInvestor}` : ''}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                ${data.funding.length > 3 ? `
+                                    <button onclick="switchTab('funding')" class="mt-4 text-sm text-green-600 hover:text-green-800 font-medium">
+                                        View all ${data.funding.length} rounds →
+                                    </button>
+                                ` : ''}
+                            ` : `
+                                <p class="text-sm text-gray-500 mb-3">No funding data available</p>
+                                <button onclick="enrichCompany('${company._id}', '${company.name}')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm w-full">
+                                    Enrich with AI
+                                </button>
+                            `}
+                        </div>
+                        
+                        <!-- Key Contacts -->
+                        <div class="bg-white border rounded-xl p-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4">Key Contacts (${data.contacts?.length || 0})</h3>
+                            ${data.contacts && data.contacts.length > 0 ? `
+                                <div class="space-y-3">
+                                    ${data.contacts.slice(0, 5).map(contact => `
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <div class="font-medium text-sm text-gray-900">${contact.name}</div>
+                                                <div class="text-xs text-gray-600">${contact.title || ''}</div>
+                                                ${contact.email ? `<a href="mailto:${contact.email}" class="text-xs text-blue-600 hover:underline">${contact.email}</a>` : ''}
+                                            </div>
+                                            ${contact.linkedinUrl ? `
+                                                <a href="${contact.linkedinUrl}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                                    </svg>
+                                                </a>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                ${data.contacts.length > 5 ? `
+                                    <button onclick="switchTab('team')" class="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                        View all ${data.contacts.length} contacts →
+                                    </button>
+                                ` : ''}
+                            ` : `
+                                <p class="text-sm text-gray-500 mb-3">No contacts found</p>
+                                <button onclick="enrichCompany('${company._id}', '${company.name}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm w-full">
+                                    Find Contacts
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display trials tab - already complete from document 2
+
+        // Display molecules tab - already complete from document 2
+
+        // Display funding tab - already complete from document 2
+
+        // Display team tab - already complete from document 2
+
+        // Display patents tab
+        function displayPatentsTab() {
+            const data = currentCompanyData;
+            const content = document.getElementById('modalContent');
+            
+            // Patents would come from a separate API call if not already loaded
+            content.innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-gray-500 mb-4">Patent search feature coming soon</p>
+                    <button onclick="alert('Patent search will search USPTO, EPO, and WIPO databases')" 
+                            class="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                        Search Patents
+                    </button>
+                </div>
+            `;
+        }
+
+        // Display news tab
+        function displayNewsTab() {
+            const data = currentCompanyData;
+            const content = document.getElementById('modalContent');
+            
+            // News would come from company-specific news search
+            content.innerHTML = `
+                <div class="text-center py-12">
+                    <p class="text-gray-500 mb-4">Company-specific news feed coming soon</p>
+                    <p class="text-sm text-gray-400">Will show all news mentioning ${data.company.name}</p>
+                </div>
+            `;
+        }
+
+        // Display manufacturing tab - already complete from document 2
+
+        // Display analysis tab - already complete from document 2
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('companyModal').classList.add('hidden');
+            currentCompanyData = null;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentFilters = {
+                priorityTier: document.getElementById('tierFilter').value,
+                clinicTime: document.getElementById('clinicTimeFilter').value,
+                funding: document.getElementById('fundingFilter').value,
+                needsCDMO: document.getElementById('cdmoFilter').value,
+                employeeCount: document.getElementById('employeeFilter').value,
+                search: document.getElementById('searchFilter').value
+            };
+            
+            // Remove empty filters
+            Object.keys(currentFilters).forEach(key => {
+                if (!currentFilters[key]) delete currentFilters[key];
+            });
+            
+            currentPage = 1;
+            loadCompanies();
+        }
+
+        // Pagination functions
+        function updatePagination(pagination) {
+            const from = (pagination.page - 1) * pagination.limit + 1;
+            const to = Math.min(pagination.page * pagination.limit, pagination.total);
+            
+            document.getElementById('showingFrom').textContent = from || 0;
+            document.getElementById('showingTo').textContent = to || 0;
+            document.getElementById('totalResults').textContent = pagination.total || 0;
+            
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            const maxPages = Math.min(5, pagination.pages);
+            for (let i = 1; i <= maxPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-3 py-1 text-sm border rounded-lg ${
+                    i === pagination.page ? 'bg-blue-600 text-white' : 'bg-white hover:bg-gray-50'
+                }`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    loadCompanies();
+                };
+                pageNumbers.appendChild(btn);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadCompanies();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            loadCompanies();
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const csv = [
+                ['Company', 'Score', 'Tier', 'Time in Clinic', 'Employees', 'Funding', 'Contacts', 'Manufacturing'],
+                ...allCompanies.map(c => [
+                    c.name,
+                    c.score?.overallScore || 0,
+                    c.score?.priorityTier || '-',
+                    calculateTimeInClinic(c),
+                    c.employeeCount || '-',
+                    c.lastFunding?.amountUSD ? `$${(c.lastFunding.amountUSD / 1000000).toFixed(1)}M` : '-',
+                    c.contactCount || 0,
+                    c.hasInternalGMP === false ? 'Needs CDMO' : c.hasInternalGMP ? 'Has GMP' : 'Unknown'
+                ])
+            ].map(row => row.join(',')).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `phlow-companies-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            
+            showNotification('Export complete', 'success');
+        }
+
+        // Update last scan time
+        function updateLastScanTime() {
+            const now = new Date();
+            document.getElementById('lastScanTime').textContent = now.toLocaleTimeString();
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Close modal when clicking outside
+        document.getElementById('companyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

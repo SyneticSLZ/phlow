@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IND‑Enabling Lead Finder — v2 (5 Target Accounts)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body { height: 100%; }
+    /* Smooth scroll + nicer scrollbars */
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-white text-slate-900">
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-indigo-600 text-white grid place-items-center font-bold shadow-sm">IND</div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-semibold leading-tight">IND‑Enabling / Pre‑Enrollment Lead Board</h1>
+          <p class="text-xs md:text-sm text-slate-600">5 high‑intent targets • filter, sort, and open rich profiles</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="exportCsvBtn" class="px-3 py-2 rounded-xl bg-white shadow-sm ring-1 ring-slate-200 text-sm hover:bg-slate-50">Export CSV</button>
+        <button id="resetBtn" class="px-3 py-2 rounded-xl bg-white shadow-sm ring-1 ring-slate-200 text-sm hover:bg-slate-50">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters / Controls -->
+  <section class="border-b border-slate-200 bg-white/70 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 grid grid-cols-1 md:grid-cols-12 gap-3">
+      <div class="md:col-span-4">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Search</label>
+        <input id="searchInput" type="text" placeholder="company, candidate, target, notes" class="w-full px-3 py-2 rounded-xl bg-white shadow-sm ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div class="md:col-span-3">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Enrollment status</label>
+        <select id="enrollSelect" class="w-full px-3 py-2 rounded-xl bg-white shadow-sm ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="">All</option>
+          <option>IND‑enabling</option>
+          <option>IND‑cleared</option>
+          <option>Phase 1 planned</option>
+        </select>
+      </div>
+      <div class="md:col-span-3">
+        <label class="block text-xs font-medium text-slate-600 mb-1">Min employees</label>
+        <input id="minEmp" type="number" min="0" placeholder="e.g., 20" class="w-full px-3 py-2 rounded-xl bg-white shadow-sm ring-1 ring-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      </div>
+      <div class="md:col-span-2 flex items-end">
+        <label class="inline-flex items-center gap-2 text-sm text-slate-700">
+          <input id="hasFundingChk" type="checkbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+          Funding signal present
+        </label>
+      </div>
+      <div class="md:col-span-12 flex flex-wrap gap-2 items-center">
+        <span class="text-xs text-slate-600 mr-2">Quick filters:</span>
+        <button data-q="GPCR" class="qbtn px-2 py-1 rounded-full text-xs ring-1 ring-slate-200 bg-white hover:bg-slate-50">GPCR</button>
+        <button data-q="CNS" class="qbtn px-2 py-1 rounded-full text-xs ring-1 ring-slate-200 bg-white hover:bg-slate-50">CNS</button>
+        <button data-q="obesity" class="qbtn px-2 py-1 rounded-full text-xs ring-1 ring-slate-200 bg-white hover:bg-slate-50">Obesity</button>
+        <button data-q="oncology" class="qbtn px-2 py-1 rounded-full text-xs ring-1 ring-slate-200 bg-white hover:bg-slate-50">Oncology</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Table Card -->
+  <main class="max-w-7xl mx-auto px-4 md:px-6 py-6">
+    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70">
+        <p class="text-sm text-slate-700">Showing <span id="rowCount">0</span> companies</p>
+        <div class="flex items-center gap-2 text-xs text-slate-600">
+          <button data-sort="company" class="sortbtn px-2 py-1 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Sort: Company</button>
+          <button data-sort="employees" class="sortbtn px-2 py-1 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Sort: Employees</button>
+          <button data-sort="cashScore" class="sortbtn px-2 py-1 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Sort: Funding strength</button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-50/70">
+            <tr class="text-left text-slate-600">
+              <th class="px-4 py-3 font-medium">Company</th>
+              <th class="px-4 py-3 font-medium">Candidate / Target</th>
+              <th class="px-4 py-3 font-medium">Enrollment</th>
+              <th class="px-4 py-3 font-medium">Funding</th>
+              <th class="px-4 py-3 font-medium">Employees</th>
+              <th class="px-4 py-3 font-medium">Signals</th>
+              <th class="px-4 py-3 font-medium">Last update</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Details Modal with Tabs -->
+  <div id="modal" class="fixed inset-0 z-50 hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+    <div class="relative max-w-6xl mx-auto mt-10 mb-10 bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 overflow-hidden">
+      <div class="flex items-start justify-between px-6 py-5 border-b border-slate-100">
+        <div>
+          <h2 id="mTitle" class="text-2xl font-semibold"></h2>
+          <p id="mSubtitle" class="text-sm text-slate-600"></p>
+        </div>
+        <button id="closeModal" class="p-2 rounded-xl hover:bg-slate-50" aria-label="Close">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+        <!-- Sidebar facts -->
+        <aside class="lg:col-span-4 p-6 space-y-4 border-r border-slate-100 bg-slate-50/50">
+          <div class="p-4 rounded-xl border border-slate-200 bg-white">
+            <h3 class="text-sm font-semibold mb-2">Key facts</h3>
+            <dl id="mFacts" class="text-sm space-y-1"></dl>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white">
+            <h3 class="text-sm font-semibold mb-2">Contacts</h3>
+            <ul id="mContacts" class="text-sm space-y-2"></ul>
+            <div id="mEmailPattern" class="text-xs text-slate-500 mt-2"></div>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white">
+            <h3 class="text-sm font-semibold mb-2">Quick actions</h3>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <a id="mIR" target="_blank" class="px-3 py-1.5 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Open IR/News</a>
+              <a id="mJobs" target="_blank" class="px-3 py-1.5 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Open Jobs</a>
+              <a id="mCT" target="_blank" class="px-3 py-1.5 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">ClinicalTrials query</a>
+              <a id="mPat" target="_blank" class="px-3 py-1.5 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50">Patent search</a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main content with tabs -->
+        <section class="lg:col-span-8 p-6">
+          <div class="border-b border-slate-200 mb-4">
+            <nav class="flex gap-2" id="tabs">
+              <button data-tab="compound" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">Compound</button>
+              <button data-tab="trial" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">Trial design</button>
+              <button data-tab="funding" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">Funding & Financials</button>
+              <button data-tab="publications" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">Publications</button>
+              <button data-tab="patents" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">Patents</button>
+              <button data-tab="notes" class="tab px-3 py-2 rounded-t-lg bg-white ring-1 ring-slate-200 text-sm">BD notes</button>
+            </nav>
+          </div>
+          <div id="tabContent" class="space-y-4">
+            <div id="tab-compound" class="tabpane"></div>
+            <div id="tab-trial" class="tabpane hidden"></div>
+            <div id="tab-funding" class="tabpane hidden"></div>
+            <div id="tab-publications" class="tabpane hidden"></div>
+            <div id="tab-patents" class="tabpane hidden"></div>
+            <div id="tab-notes" class="tabpane hidden"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ***** Data (5 targets) *****
+    const leads = [
+      {
+        company: "Superluminal Medicines",
+        candidate: "Selective, biased MC4R agonist",
+        modality: "Oral small molecule (obesity / cardiometabolic)",
+        target: "MC4R (melanocortin‑4 receptor)",
+        enrollment: "IND‑enabling",
+        lastUpdate: "2025-07-22",
+        employees: null,
+        hiring: { status: "No current openings", jobsUrl: "https://job-boards.greenhouse.io/superluminalrx" },
+        funding: {
+          summary: "Lilly collaboration up to $1.3B (structure: upfront + equity + milestones + royalties)",
+          cashScore: 4
+        },
+        irLinks: [
+          { label: "PR Newswire — IND‑enabling announced", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-collaboration-with-eli-lilly-and-company-to-advance-small-molecule-therapeutics-for-cardiometabolic-diseases-and-obesity-302529689.html" }
+        ],
+        ctQuery: "https://classic.clinicaltrials.gov/search?term=Superluminal+Medicines+MC4R",
+        patentSearch: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html",
+        emailDomain: "superluminalrx.com",
+        contacts: [
+          { name: "Cony D’Cruz", title: "Co‑founder & CEO", linkedin: "https://www.linkedin.com/" },
+          { name: "Ajay Yekkirala, PhD", title: "Co‑founder & SVP, Head of Discovery", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Small‑molecule MC4R biased agonist (code undisclosed).",
+          details: [
+            "Likely heteroaryl‑rich scaffold (piperazine / pyridine / indane motifs common in class).",
+            "Bias design to improve efficacy / tolerability vs. non‑biased agonists."
+          ],
+          links: []
+        },
+        trial: {
+          design: "FIH SAD/MAD in healthy volunteers anticipated; not yet registered.",
+          notes: ["Pre‑FIH readiness: define release/stability, bioanalytical methods, and IMP packaging."]
+        },
+        pubs: [
+          { label: "MC4R agonist background (PubMed search)", url: "https://pubmed.ncbi.nlm.nih.gov/?term=MC4R+agonist+obesity+review" }
+        ],
+        patents: [ { label: "USPTO search — Superluminal MC4R", url: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html" } ],
+        bdNotes: "Offer IND‑enable → FIH CMC stack: tox batches, analytical validation, IMP supply for SAD/MAD.",
+      },
+      {
+        company: "MapLight Therapeutics",
+        candidate: "Two preclinical CNS small molecules",
+        modality: "Oral small molecules (CNS)",
+        target: "Program‑dependent (see S‑1)",
+        enrollment: "IND‑enabling",
+        lastUpdate: "2025-09-19",
+        employees: 109,
+        hiring: { status: "Many openings on Greenhouse", jobsUrl: "https://boards.greenhouse.io/maplighttherapeutics" },
+        funding: {
+          summary: "S‑1 filed for IPO (Sept 19, 2025) — strong access to capital",
+          cashScore: 4
+        },
+        irLinks: [
+          { label: "S‑1 / IR overview", url: "https://www.sec.gov/" },
+          { label: "Publications hub", url: "https://maplt.com/publications/" }
+        ],
+        ctQuery: "https://classic.clinicaltrials.gov/search?term=MapLight+Therapeutics",
+        patentSearch: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html",
+        emailDomain: "maplt.com",
+        contacts: [
+          { name: "Christopher (Chris) Kroeger, MD, MBA", title: "Chief Executive Officer", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Two CNS candidates nearing IND‑enable completion.",
+          details: [
+            "CNS PK constraints → attention to permeability, metabolic soft spots.",
+            "Expect heteroaryl amides / spirocycles; plan polymorph & salt screens early."
+          ],
+          links: [ { label: "Company publications & posters", url: "https://maplt.com/publications/" } ]
+        },
+        trial: {
+          design: "Asset‑specific; FIH designs to be posted upon registration.",
+          notes: ["Stand up CNS‑fit bioanalytical methods and TMF processes in advance."]
+        },
+        pubs: [ { label: "PubMed (CNS targets) — search placeholder", url: "https://pubmed.ncbi.nlm.nih.gov/" } ],
+        patents: [ { label: "USPTO search — MapLight", url: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html" } ],
+        bdNotes: "Pre‑FIH CNS: compress CMC + analytics to deliver SAD/MAD‑ready DS/DP with impurity profiling.",
+      },
+      {
+        company: "Structure Therapeutics (NASDAQ: GPCR)",
+        candidate: "ACCG‑2671",
+        modality: "Oral small molecule (dual‑mechanism amylin‑based)",
+        target: "Amylin / calcitonin receptor system",
+        enrollment: "Phase 1 planned",
+        lastUpdate: "2025-05-09",
+        employees: 163,
+        hiring: { status: "Multiple openings (LinkedIn/IR)", jobsUrl: "https://www.structuretx.com/" },
+        funding: {
+          summary: "Cash & equivalents $836.9M (Mar 31, 2025); runway through ≥2027",
+          cashScore: 5
+        },
+        irLinks: [
+          { label: "IR update — IND‑enabling ongoing", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-first-quarter-2025-financial" },
+          { label: "ADA 2025 abstract (preclinical)", url: "https://professional.diabetes.org/abstracts" }
+        ],
+        ctQuery: "https://classic.clinicaltrials.gov/search?term=ACCG-2671",
+        patentSearch: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html",
+        emailDomain: "structuretx.com",
+        contacts: [
+          { name: "Raymond Stevens, PhD", title: "Chief Executive Officer", linkedin: "https://www.linkedin.com/" },
+          { name: "Blai Coll, MD, PhD", title: "Chief Medical Officer", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Oral dual‑mechanism amylin‑based small molecule; preclinical weight‑loss profile (ADA).",
+          details: [
+            "Peptidomimetic tendencies → solid‑form control (polymorph/solvate), permeability, first‑pass risk.",
+            "Lock salt form, photo‑stability, discriminating analytical methods pre‑FIH."
+          ],
+          links: [ { label: "ADA abstract portal", url: "https://professional.diabetes.org/abstracts" } ]
+        },
+        trial: {
+          design: "SAD/MAD in healthy volunteers anticipated; metabolic readouts.",
+          notes: ["Parallel DS/DP: Phase‑1‑grade API with IMP packaging & stability."]
+        },
+        pubs: [ { label: "PubMed (amylin small molecules) — search", url: "https://pubmed.ncbi.nlm.nih.gov/?term=amylin+receptor+small+molecule" } ],
+        patents: [ { label: "USPTO search — ACCG‑2671 / Structure Tx", url: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html" } ],
+        bdNotes: "Deliver Phase‑1 oral API + IMP in parallel; solid‑state & polymorph controls; SAD/MAD supply planning.",
+      },
+      {
+        company: "Addex Therapeutics + Indivior",
+        candidate: "GABA\u1D67 PAM (e.g., ADX71441 class)",
+        modality: "Oral small molecule (CNS)",
+        target: "GABA\u1D67 positive allosteric modulation",
+        enrollment: "Post‑IND‑enabling",
+        lastUpdate: "2025-08-08",
+        employees: 2,
+        hiring: { status: "No open positions", jobsUrl: "https://www.addextherapeutics.com/en/work-with-us/" },
+        funding: {
+          summary: "Lean Swiss public co.; partner model with Indivior; recent HY updates.",
+          cashScore: 2
+        },
+        irLinks: [
+          { label: "HY‑2025 corporate update", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-therapeutics-reports-2025-half-year-and-second-quarter-financial-results-and-provides-corporate-update/" }
+        ],
+        ctQuery: "https://classic.clinicaltrials.gov/search?term=Addex+GABA+B+PAM",
+        patentSearch: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html",
+        emailDomain: "addextherapeutics.com",
+        contacts: [
+          { name: "Tim Dyer", title: "Chief Executive Officer", linkedin: "https://www.linkedin.com/" },
+          { name: "Roger Mills, MD", title: "Chief Medical Officer", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "GABA\u1D67 PAM class; ADX71441 literature informs efficacy and PK/PD expectations.",
+          details: [
+            "Watch enantiopurity, salt‑form selection, late‑stage functionalization robustness.",
+            "CNS oral DP: impurity control & dissolution critical."
+          ],
+          links: [ { label: "PubMed — ADX71441", url: "https://pubmed.ncbi.nlm.nih.gov/?term=ADX71441" } ]
+        },
+        trial: {
+          design: "Not yet disclosed; FIH to be posted when ready.",
+          notes: ["Externalize IND→FIH CMC: tech‑transfer, IMP/QP release (EU/UK), CMC authoring."]
+        },
+        pubs: [ { label: "PubMed — GABA\u1D67 PAM", url: "https://pubmed.ncbi.nlm.nih.gov/?term=GABAB+positive+allosteric+modulator" } ],
+        patents: [ { label: "USPTO search — Addex / Indivior GABA\u1D67 PAM", url: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html" } ],
+        bdNotes: "Be their external IND→FIH CMC arm; lean team signals outsourcing intent.",
+      },
+      {
+        company: "BioLineRx + Hemispherian (JV)",
+        candidate: "GLIX1",
+        modality: "Oral small molecule (DDR/TET2 axis)",
+        target: "TET2‑linked DDR modulation (↑5‑hmC)",
+        enrollment: "IND‑cleared",
+        lastUpdate: "2025-08-28",
+        employees: "28 / ~10",
+        hiring: { status: "No current postings (lean JV)", jobsUrl: "https://ir.biolinerx.com/press-releases" },
+        funding: {
+          summary: "BioLineRx cash $28.2M (Jun 30, 2025); runway into 1H 2027; JV timing locked",
+          cashScore: 3
+        },
+        irLinks: [
+          { label: "JV PR — IND cleared; Ph1/2a Q1’26", url: "https://www.prnewswire.com/news-releases/biolinerx-ltd-and-hemispherian-as-establish-joint-venture-to-develop-glix1-a-first-in-class-oral-small-molecule-targeting-dna-damage-response-in-glioblastoma-and-other-cancers-302569321.html" },
+          { label: "BioLineRx IR — Cash/Runway", url: "https://ir.biolinerx.com/" }
+        ],
+        ctQuery: "https://classic.clinicaltrials.gov/search?term=GLIX1",
+        patentSearch: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html",
+        emailDomain: "biolinerx.com, hemispherian.com",
+        contacts: [
+          { name: "Philip Serlin", title: "CEO, BioLineRx", linkedin: "https://www.linkedin.com/" },
+          { name: "Zeno Albisser", title: "CEO, Hemispherian", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Oral DDR/TET2‑axis modulator; brain‑penetrant; GBM focus.",
+          details: [
+            "CNS oncology → particle size control / micronization; permeability & CNS impurities.",
+            "Stability (thermal/light) and CNS‑specific bioanalytical methods."
+          ],
+          links: [ { label: "Mechanism overview", url: "https://www.hemispherian.com/science#publications" } ]
+        },
+        trial: {
+          design: "Oncology Ph1/2a planned; standard 3+3 dose‑escalation expected with expansion cohorts.",
+          notes: ["Stand up global trial supply, packaging/labeling, and QP release pathways early."]
+        },
+        pubs: [ { label: "PubMed — TET2 / 5‑hmC in GBM (search)", url: "https://pubmed.ncbi.nlm.nih.gov/?term=TET2+glioblastoma+5-hmc" } ],
+        patents: [ { label: "USPTO search — GLIX1 / Hemispherian", url: "https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html" } ],
+        bdNotes: "Stand up IMP manufacturing & global supply for oncology Ph1/2a; CNS analytics focus.",
+      }
+    ];
+
+    // ***** Rendering *****
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+    function chip(text){
+      return `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs ring-1 ring-slate-200 bg-slate-50">${text}</span>`;
+    }
+
+    function renderTable(rows){
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      rows.forEach((r, idx) => {
+        const signals = [r.target.includes('GPCR')? 'GPCR': null, r.modality.includes('CNS')? 'CNS': null, r.modality.includes('oncology')? 'Oncology': null, r.modality.includes('obesity')? 'Obesity': null].filter(Boolean).map(chip).join(' ');
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 cursor-pointer";
+        tr.innerHTML = `
+          <td class="px-4 py-3 whitespace-nowrap font-medium">${r.company}</td>
+          <td class="px-4 py-3">${r.candidate} <span class="text-slate-500">— ${r.target}</span></td>
+          <td class="px-4 py-3 whitespace-nowrap"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs ring-1 ring-slate-200">${r.enrollment}</span></td>
+          <td class="px-4 py-3">${r.funding.summary}</td>
+          <td class="px-4 py-3 whitespace-nowrap">${r.employees ?? '—'}</td>
+          <td class="px-4 py-3">${signals || '—'}</td>
+          <td class="px-4 py-3 whitespace-nowrap text-slate-500">${r.lastUpdate || '—'}</td>
+        `;
+        tr.addEventListener('click', () => openModal(r));
+        tbody.appendChild(tr);
+      });
+      document.getElementById('rowCount').textContent = rows.length;
+    }
+
+    // Filters
+    function applyFilters(){
+      const q = $('#searchInput').value.trim().toLowerCase();
+      const enroll = $('#enrollSelect').value;
+      const minEmp = parseInt($('#minEmp').value || '0', 10);
+      const hasFunding = $('#hasFundingChk').checked;
+      const filtered = leads.filter(l => {
+        const text = `${l.company} ${l.candidate} ${l.target} ${l.modality} ${l.funding.summary} ${l.bdNotes}`.toLowerCase();
+        if (q && !text.includes(q)) return false;
+        if (enroll && l.enrollment !== enroll) return false;
+        if (!isNaN(minEmp) && minEmp > 0) {
+          const sz = (typeof l.employees === 'number') ? l.employees : 0;
+          if (sz < minEmp) return false;
+        }
+        if (hasFunding && !l.funding?.summary) return false;
+        return true;
+      });
+      currentRows = filtered;
+      renderTable(filtered);
+    }
+
+    // Sorting
+    let sortKey = null, sortAsc = true;
+    function sortRows(key){
+      sortAsc = (sortKey === key) ? !sortAsc : true;
+      sortKey = key;
+      currentRows.sort((a,b)=>{
+        const va = (key==='cashScore')? (a.funding?.cashScore||0) : (a[key]||0);
+        const vb = (key==='cashScore')? (b.funding?.cashScore||0) : (b[key]||0);
+        if (typeof va === 'string' && typeof vb === 'string') return sortAsc? va.localeCompare(vb): vb.localeCompare(va);
+        return sortAsc? (va-vb):(vb-va);
+      });
+      renderTable(currentRows);
+    }
+
+    // Modal
+    function openModal(item){
+      $('#mTitle').textContent = item.company;
+      $('#mSubtitle').textContent = `${item.candidate} — ${item.modality}`;
+
+      const facts = [
+        ["Enrollment", item.enrollment],
+        ["Target", item.target],
+        ["Employees", item.employees || '—'],
+        ["Hiring", item.hiring?.status || '—'],
+        ["Last update", item.lastUpdate || '—']
+      ];
+      $('#mFacts').innerHTML = facts.map(([k,v])=>`<div class="flex justify-between gap-4"><dt class="text-slate-500">${k}</dt><dd class="font-medium text-right">${v}</dd></div>`).join('');
+
+      // Contacts
+      $('#mContacts').innerHTML = (item.contacts||[]).map(c=>`<li class="flex items-start gap-2"><div class="mt-1 h-2 w-2 rounded-full bg-indigo-500"></div><div><div class="font-medium">${c.name}</div><div class="text-slate-500">${c.title}</div><a class="text-indigo-600 hover:underline text-xs" href="${c.linkedin}" target="_blank">LinkedIn</a></div></li>`).join('');
+      $('#mEmailPattern').textContent = item.emailDomain? `Email pattern: likely firstname.lastname@${item.emailDomain}`: '';
+
+      // Quick links
+      $('#mIR').href = item.irLinks?.[0]?.url || '#';
+      $('#mJobs').href = item.hiring?.jobsUrl || '#';
+      $('#mCT').href = item.ctQuery || '#';
+      $('#mPat').href = item.patentSearch || '#';
+
+      // Tabs content
+      $('#tab-compound').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Summary</h4>
+          <p class="text-sm">${item.compound.summary}</p>
+        </div>
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Details</h4>
+          <ul class="list-disc pl-5 text-sm space-y-1">${(item.compound.details||[]).map(d=>`<li>${d}</li>`).join('')}</ul>
+          <div class="mt-2 flex flex-wrap gap-2 text-sm">${(item.compound.links||[]).map(l=>`<a class="text-indigo-600 hover:underline" target="_blank" href="${l.url}">${l.label}</a>`).join('')}</div>
+        </div>`;
+
+      $('#tab-trial').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Design</h4>
+          <p class="text-sm">${item.trial.design}</p>
+          <ul class="list-disc pl-5 text-sm mt-2 space-y-1">${(item.trial.notes||[]).map(n=>`<li>${n}</li>`).join('')}</ul>
+          <div class="mt-3"><a class="text-indigo-600 hover:underline text-sm" href="${item.ctQuery}" target="_blank">ClinicalTrials.gov query</a></div>
+        </div>`;
+
+      $('#tab-funding').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Funding & Runway</h4>
+          <p class="text-sm">${item.funding.summary}</p>
+          <div class="mt-3 flex flex-wrap gap-2">${(item.irLinks||[]).map(l=>`<a class="px-2 py-1 rounded-lg ring-1 ring-slate-200 bg-white hover:bg-slate-50 text-xs" target="_blank" href="${l.url}">${l.label}</a>`).join('')}</div>
+        </div>`;
+
+      $('#tab-publications').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Key publications / portals</h4>
+          <ul class="list-disc pl-5 text-sm space-y-1">${(item.pubs||[]).map(p=>`<li><a class="text-indigo-600 hover:underline" target="_blank" href="${p.url}">${p.label}</a></li>`).join('') || '<li class="text-slate-500">No items</li>'}</ul>
+        </div>`;
+
+      $('#tab-patents').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">Patent search links</h4>
+          <ul class="list-disc pl-5 text-sm space-y-1">${(item.patents||[]).map(p=>`<li><a class="text-indigo-600 hover:underline" target="_blank" href="${p.url}">${p.label}</a></li>`).join('') || '<li class="text-slate-500">No items</li>'}</ul>
+        </div>`;
+
+      $('#tab-notes').innerHTML = `
+        <div class="p-4 rounded-xl border border-slate-200">
+          <h4 class="text-sm font-semibold mb-2">BD notes</h4>
+          <p class="text-sm">${item.bdNotes || '—'}</p>
+        </div>`;
+
+      // Show modal
+      $('#modal').classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+
+      // Activate first tab
+      activateTab('compound');
+    }
+
+    function closeModal(){ $('#modal').classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }
+
+    // Tabs logic
+    function activateTab(name){
+      $$('#tabs .tab').forEach(btn => btn.classList.toggle('bg-indigo-50', btn.dataset.tab===name));
+      ['compound','trial','funding','publications','patents','notes'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t!==name);
+      });
+    }
+
+    // CSV Export
+    function exportCsv(rows){
+      const headers = ["Company","Candidate","Target","Modality","Enrollment","Funding","Employees","Hiring","Last Update"]; 
+      const csv = [headers.join(',')]
+        .concat(rows.map(r => [r.company,r.candidate,r.target,r.modality,r.enrollment,(r.funding?.summary||'').replaceAll(',', ';'),r.employees??'',r.hiring?.status||'',r.lastUpdate||''].map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download='ind-enabling-leads_v2.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    // State + events
+    let currentRows = [...leads];
+    renderTable(currentRows);
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('enrollSelect').addEventListener('change', applyFilters);
+    document.getElementById('minEmp').addEventListener('input', applyFilters);
+    document.getElementById('hasFundingChk').addEventListener('change', applyFilters);
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{ 
+      document.getElementById('searchInput').value='';
+      document.getElementById('enrollSelect').value='';
+      document.getElementById('minEmp').value='';
+      document.getElementById('hasFundingChk').checked=false;
+      currentRows=[...leads]; renderTable(currentRows);
+    });
+    document.getElementById('exportCsvBtn').addEventListener('click', ()=>exportCsv(currentRows));
+
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', (e)=>{ if (e.target.id==='modal') closeModal(); });
+
+    $$('#tabs .tab').forEach(btn => btn.addEventListener('click', ()=>activateTab(btn.dataset.tab)));
+
+    $$('.sortbtn').forEach(b => b.addEventListener('click', ()=>sortRows(b.dataset.sort)));
+
+    $$('.qbtn').forEach(b => b.addEventListener('click', ()=>{ document.getElementById('searchInput').value = b.dataset.q; applyFilters(); }));
+  </script>
+</body>
+</html>

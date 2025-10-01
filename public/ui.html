@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enhanced IND-Enabling Lead Finder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #3a0ca3; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #7b2cbf; }
+    
+    body {
+      background-color: #0d1117; /* Dark navy background */
+      color: #e0e0e0; /* Light text */
+    }
+    
+    header {
+      background-color: #1a1a2e; /* Darker header */
+      border-color: #3a0ca3; /* Purple border */
+    }
+    
+    .bg-white { background-color: #1e1e2f; } /* Dark cards */
+    .bg-gray-50 { background-color: #0d1117; } /* Darker gray */
+    .text-gray-900 { color: #e0e0e0; }
+    .text-gray-700 { color: #b0b0b0; }
+    .text-gray-600 { color: #9090a0; }
+    .text-gray-500 { color: #707080; }
+    .border-gray-200 { border-color: #3a0ca3; } /* Purple borders */
+    
+    .status-badge {
+      @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors;
+    }
+    .status-ind-enabling { @apply bg-blue-900 text-blue-200 ring-1 ring-blue-600 hover:bg-blue-800; }
+    .status-ind-cleared { @apply bg-green-900 text-green-200 ring-1 ring-green-600 hover:bg-green-800; }
+    .status-phase-1 { @apply bg-purple-900 text-purple-200 ring-1 ring-purple-600 hover:bg-purple-800; }
+    .status-post-ind-enabling { @apply bg-indigo-900 text-indigo-200 ring-1 ring-indigo-600 hover:bg-indigo-800; }
+    
+    .funding-score-5 { @apply text-green-400; }
+    .funding-score-4 { @apply text-blue-400; }
+    .funding-score-3 { @apply text-amber-400; }
+    .funding-score-2 { @apply text-orange-400; }
+    
+    .tab-active {
+      @apply bg-indigo-900 border-b-2 border-purple-500 text-purple-300 font-semibold;
+    }
+    
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(123, 44, 191, 0.3); /* Purple shadow */
+    }
+
+    /* Enhanced styles for modal - more spacing */
+    .modal-section { @apply bg-indigo-900 rounded-xl p-8 border border-purple-600 mb-6 shadow-md; } /* Increased padding */
+    .modal-list { @apply space-y-4; } /* More space between list items */
+    .modal-link { @apply text-purple-300 hover:text-purple-100 underline; }
+    .modal-table { @apply w-full border-collapse; }
+    .modal-table th { @apply bg-purple-900 p-4 text-left font-semibold text-purple-200; } /* Increased padding */
+    .modal-table td { @apply p-4 border-t border-purple-600 text-gray-300; } /* Increased padding */
+  </style>
+</head>
+<body class="bg-0d1117 text-e0e0e0">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-1a1a2e border-b border-3a0ca3 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <svg class="w-10 h-10 text-7b2cbf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <div>
+              <h1 class="text-xl font-semibold text-e0e0e0">Enhanced IND-Enabling Lead Finder</h1>
+              <p class="text-sm text-9090a0">Updated targets for MedChem to Phase 1 transition (Oct 2025 data)</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="exportCsvBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-1e1e2f border border-3a0ca3 text-sm font-medium text-b0b0b0 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export CSV
+          </button>
+          <button id="resetBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-1e1e2f border border-3a0ca3 text-sm font-medium text-b0b0b0 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters Panel -->
+  <section class="bg-1a1a2e border-b border-3a0ca3">
+    <div class="max-w-7xl mx-auto px-6 py-5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+        <div class="lg:col-span-4">
+          <label class="block text-sm font-medium text-b0b0b0 mb-2">Search</label>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-9090a0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input id="searchInput" type="text" placeholder="Company, candidate, target, mechanism..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-3a0ca3 bg-1e1e2f focus:outline-none focus:ring-2 focus:ring-7b2cbf focus:border-transparent text-sm text-e0e0e0 transition-colors" />
+          </div>
+        </div>
+        
+        <div class="lg:col-span-3">
+          <label class="block text-sm font-medium text-b0b0b0 mb-2">Development Stage</label>
+          <select id="enrollSelect" class="w-full px-4 py-2.5 rounded-lg border border-3a0ca3 bg-1e1e2f focus:outline-none focus:ring-2 focus:ring-7b2cbf focus:border-transparent text-sm text-e0e0e0 transition-colors">
+            <option value="">All stages</option>
+            <option>IND-enabling</option>
+            <option>IND-cleared</option>
+            <option>Phase 1 planned</option>
+            <option>Post-IND-enabling</option>
+          </select>
+        </div>
+        
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-medium text-b0b0b0 mb-2">Min. Employees</label>
+          <input id="minEmp" type="number" min="0" placeholder="e.g., 20" class="w-full px-4 py-2.5 rounded-lg border border-3a0ca3 bg-1e1e2f focus:outline-none focus:ring-2 focus:ring-7b2cbf focus:border-transparent text-sm text-e0e0e0 transition-colors" />
+        </div>
+        
+        <div class="lg:col-span-3 flex items-end">
+          <label class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-lg border border-3a0ca3 bg-1e1e2f hover:bg-3a0ca3 cursor-pointer transition-colors card-hover">
+            <input id="hasFundingChk" type="checkbox" class="w-4 h-4 rounded border-3a0ca3 text-7b2cbf focus:ring-7b2cbf" />
+            <span class="text-sm font-medium text-b0b0b0">Has recent funding</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-9090a0">Quick filters:</span>
+        <div class="flex flex-wrap gap-2">
+          <button data-q="GPCR" class="qbtn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-7b2cbf hover:border-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/></svg>
+            GPCR
+          </button>
+          <button data-q="CNS" class="qbtn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-7b2cbf hover:border-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 016 6v3.586l.707.707A1 1 0 0116 14H4a1 1 0 01-.707-1.707L4 11.586V8a6 6 0 016-6z"/></svg>
+            CNS
+          </button>
+          <button data-q="obesity" class="qbtn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-7b2cbf hover:border-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"/></svg>
+            Obesity
+          </button>
+          <button data-q="oncology" class="qbtn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-7b2cbf hover:border-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3.5a1.5 1.5 0 013 0V4a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-.5a1.5 1.5 0 000 3h.5a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-.5a1.5 1.5 0 00-3 0v.5a1 1 0 01-1 1H6a1 1 0 01-1-1v-3a1 1 0 00-1-1h-.5a1.5 1.5 0 010-3H4a1 1 0 001-1V6a1 1 0 011-1h3a1 1 0 001-1v-.5z"/></svg>
+            Oncology
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-6 py-6">
+    <div class="bg-1e1e2f rounded-xl shadow-md border border-3a0ca3 overflow-hidden card-hover">
+      <!-- Table Header -->
+      <div class="flex items-center justify-between px-6 py-4 bg-1a1a2e border-b border-3a0ca3">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-9090a0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          <p class="text-sm font-medium text-b0b0b0">
+            Showing <span id="rowCount" class="font-semibold text-7b2cbf">0</span> companies
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-707080 mr-1">Sort by:</span>
+          <button data-sort="company" class="sortbtn inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors card-hover">
+            Company
+            <svg class="w-3 h-3 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </button>
+          <button data-sort="employees" class="sortbtn inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors card-hover">
+            Employees
+            <svg class="w-3 h-3 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </button>
+          <button data-sort="cashScore" class="sortbtn inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-1e1e2f border border-3a0ca3 text-b0b0b0 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors card-hover">
+            Funding
+            <svg class="w-3 h-3 sort-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </button>
+        </div>
+      </div>
+      
+      <!-- Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-3a0ca3">
+          <thead class="bg-1a1a2e">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Company</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Candidate & Target</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Stage</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Funding</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Team Size</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Focus Areas</th>
+              <th class="px-6 py-3 text-left text-xs font-semibold text-9090a0 uppercase tracking-wider">Updated</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="bg-1e1e2f divide-y divide-3a0ca3"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Enhanced Modal -->
+  <div id="modal" class="fixed inset-0 z-50 hidden overflow-y-auto transition-opacity duration-300" aria-hidden="true">
+    <div class="flex items-start justify-center min-h-screen px-4 pt-4 pb-20">
+      <div class="fixed inset-0 bg-0d1117/80 backdrop-blur-sm transition-opacity duration-300" id="modalBackdrop"></div>
+      
+      <div class="relative bg-1a1a2e rounded-2xl shadow-2xl max-w-7xl w-full mt-8 mb-8 overflow-hidden transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+        <!-- Modal Header -->
+        <div class="sticky top-0 z-10 flex items-start justify-between px-8 py-6 bg-0d1117 border-b border-3a0ca3">
+          <div class="flex-1 min-w-0">
+            <h2 id="mTitle" class="text-2xl font-semibold text-e0e0e0 truncate"></h2>
+            <p id="mSubtitle" class="mt-1 text-sm text-9090a0"></p>
+          </div>
+          <button id="closeModal" class="ml-4 p-2 rounded-lg text-707080 hover:bg-3a0ca3 hover:text-e0e0e0 transition-colors" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12">
+          <!-- Sidebar -->
+          <aside class="lg:col-span-4 p-8 bg-0d1117 border-r border-3a0ca3 space-y-6 overflow-y-auto max-h-[80vh]"> <!-- Increased padding -->
+            <!-- Key Facts -->
+            <div class="modal-section card-hover">
+              <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-7b2cbf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="text-sm font-semibold text-e0e0e0">Key Facts</h3>
+              </div>
+              <dl id="mFacts" class="space-y-4 text-sm"> <!-- Increased spacing -->
+              </dl>
+            </div>
+
+            <!-- Contacts -->
+            <div class="modal-section card-hover">
+              <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-7b2cbf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <h3 class="text-sm font-semibold text-e0e0e0">Key Contacts</h3>
+              </div>
+              <ul id="mContacts" class="modal-list text-sm space-y-6"> <!-- Increased spacing -->
+              </ul>
+              <div id="mEmailPattern" class="mt-4 pt-4 border-t border-3a0ca3 text-xs text-707080"></div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="modal-section card-hover">
+              <div class="flex items-center gap-2 mb-4">
+                <svg class="w-5 h-5 text-7b2cbf" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <h3 class="text-sm font-semibold text-e0e0e0">Quick Actions</h3>
+              </div>
+              <div class="grid grid-cols-2 gap-4"> <!-- Increased gap -->
+                <a id="mIR" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-lg border border-3a0ca3 bg-1e1e2f text-xs font-medium text-b0b0b0 hover:bg-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  IR/News
+                </a>
+                <a id="mJobs" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-lg border border-3a0ca3 bg-1e1e2f text-xs font-medium text-b0b0b0 hover:bg-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                  Jobs
+                </a>
+                <a id="mCT" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-lg border border-3a0ca3 bg-1e1e2f text-xs font-medium text-b0b0b0 hover:bg-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  Trials
+                </a>
+                <a id="mPat" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-lg border border-3a0ca3 bg-1e1e2f text-xs font-medium text-b0b0b0 hover:bg-7b2cbf hover:text-e0e0e0 transition-colors card-hover">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                  Patents
+                </a>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Main Content Area -->
+          <section class="lg:col-span-8 p-8 overflow-y-auto max-h-[80vh]"> <!-- Increased padding -->
+            <!-- Tabs -->
+            <div class="border-b border-3a0ca3 mb-6">
+              <nav class="flex gap-1 overflow-x-auto" id="tabs">
+                <button data-tab="compound" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors tab-active">
+                  Compound
+                </button>
+                <button data-tab="trial" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  Trial Design
+                </button>
+                <button data-tab="funding" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  Funding
+                </button>
+                <button data-tab="publications" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  Publications
+                </button>
+                <button data-tab="patents" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  Patents
+                </button>
+                <button data-tab="news" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  News & Citations
+                </button>
+                <button data-tab="databases" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  Databases (ChEMBL, PubChem)
+                </button>
+                <button data-tab="notes" class="tab px-4 py-3 text-sm font-medium text-9090a0 border-b-2 border-transparent hover:text-e0e0e0 hover:border-7b2cbf transition-colors">
+                  BD Notes
+                </button>
+              </nav>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tabContent" class="space-y-6"> <!-- Increased spacing -->
+              <div id="tab-compound" class="tabpane"></div>
+              <div id="tab-trial" class="tabpane hidden"></div>
+              <div id="tab-funding" class="tabpane hidden"></div>
+              <div id="tab-publications" class="tabpane hidden"></div>
+              <div id="tab-patents" class="tabpane hidden"></div>
+              <div id="tab-news" class="tabpane hidden"></div>
+              <div id="tab-databases" class="tabpane hidden"></div>
+              <div id="tab-notes" class="tabpane hidden"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Paste the leads array from previous responses here
+        const leads = [
+      // Entry 1: Superluminal Medicines (as before, with minor additions)
+      {
+        company: "Superluminal Medicines",
+        candidate: "Selective, biased MC4R agonist",
+        modality: "Oral small molecule (obesity / cardiometabolic)",
+        target: "MC4R (melanocortin-4 receptor)",
+        enrollment: "IND-enabling",
+        lastUpdate: "2025-09-24",
+        employees: "20-30",
+        hiring: { status: "No current openings (lean operations, outsourcing likely)", jobsUrl: "https://superluminalrx.com/careers/" },
+        funding: {
+          summary: "Seed $33M (2023), Series A $120M (2024), Lilly collaboration up to $1.3B (upfront + equity + milestones + royalties, excludes MC4R); strong runway into clinical stages",
+          cashScore: 5,
+          details: "Seed Round: $33 million in 2023 (mentioned in Series A announcements). Series A: $120 million in September 2024, led by RA Capital Management with participation from Insight Partners, NVentures, Catalio Capital Management, Eli Lilly, and Gaingels; supports progression of lead program (MC4R) into clinical development and more GPCR programs. Lilly Collaboration: Up to $1.3 billion (upfront, near-term payments, equity investment, development and commercial milestones, tiered royalties); focuses on undisclosed GPCR targets for cardiometabolic diseases and obesity; excludes MC4R agonist, which is wholly owned and expected to enter clinic in 2026.",
+          links: [
+            { label: "Series A PDF", url: "https://www.superluminalrx.com/wp-content/uploads/Superluminal_Series_A_Financing_Press_Release-090924.pdf" },
+            { label: "Lilly Collaboration PDF", url: "https://www.superluminalrx.com/wp-content/uploads/SUN_Lilly_PR_FINAL-with-logo.pdf" },
+            { label: "Crunchbase Profile", url: "https://www.crunchbase.com/organization/superluminal-medicines" }
+          ]
+        },
+        irLinks: [
+          { label: "PR — IND-enabling", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-a-selective-biased-mc4r-agonist-is-advancing-to-ind-enabling-studies-for-the-treatment-of-obesity-302510239.html" },
+          { label: "Lilly deal PR", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-collaboration-with-eli-lilly-and-company-to-advance-small-molecule-therapeutics-for-cardiometabolic-diseases-and-obesity-302529689.html" },
+          { label: "Series A PDF", url: "https://superluminalrx.com/wp-content/uploads/Superluminal_Series_A_Financing_Press_Release-090924.pdf" }
+        ],
+        ctQuery: "https://clinicaltrials.gov/search?term=Superluminal%20Medicines",
+        patentSearch: "https://patents.google.com/?assignee=Superluminal+Medicines",
+        emailDomain: "superluminalrx.com",
+        contacts: [
+          { name: "Cony D’Cruz", title: "Co-founder & CEO", email: "cony.dcruz@superluminalrx.com", linkedin: "https://www.linkedin.com/in/cony-dcruz" },
+          { name: "Ajay Yekkirala, PhD", title: "Co-founder & SVP, Head of Discovery", email: "ajay.yekkirala@superluminalrx.com", linkedin: "https://www.linkedin.com/in/ajay-yekkirala" }
+        ],
+        compound: {
+          summary: "Oral small-molecule MC4R biased agonist (code undisclosed) for obesity/cardio-metabolic; highly selective, Gs-biased signaling; preclinical efficacy in rare obesity models. Engineered as a biased MC4R agonist, focusing on a biased signaling profile to improve the therapeutic index. Orally administered, highly selective, biased MC4R agonist initially targeting rare genetic forms of obesity and hypothalamic obesity.",
+          details: [
+            "Lipophilic, heteroaryl-rich scaffolds (e.g., piperazine/pyridine/indane motifs).",
+            "AI-driven Hyperloop™ platform for structure-based design, reducing synthesis iterations; integrates AI/ML, protein dynamics, and structural biology.",
+            "Focus on scalability, impurity control, GPCR-specific optimizations like BBB permeability.",
+            "Demonstrated a broad therapeutic window, favorable safety profile compared to existing treatments, and synergistic effects when combined with incretin-targeting drugs, resulting in a dose-dependent increase in weight loss.",
+            "Designed to avoid side effects by activating only relevant MC4R signaling pathways, with high selectivity against MC1R demonstrated in preclinical studies."
+          ],
+          links: [
+            { label: "Company About Page", url: "https://superluminalrx.com/about/" },
+            { label: "Pipeline Page", url: "https://superluminalrx.com/pipeline/" }
+          ],
+          chembl: "No exact structure or ChEMBL ID is publicly available, as the molecule's code remains undisclosed. General MC4R agonists in ChEMBL include setmelanotide (CHEMBL3301572).",
+          pubchem: "No PubChem entry for Superluminal's agonist; no SIDs or CIDs found. Related MC4R agonists: Setmelanotide (CID 11993702), THIQ analog (CID 10430549), Ro 27-3225 (CID 5312124), Bremelanotide (CID 9941379).",
+          pubchemTable: [
+            { name: "Setmelanotide", cid: "11993702", link: "https://pubchem.ncbi.nlm.nih.gov/compound/11993702#section=2D-Structure", details: "Cyclic peptide MC4R agonist approved for rare obesity; formula C49H68N18O9S2." },
+            { name: "THIQ (analog)", cid: "10430549", link: "https://pubchem.ncbi.nlm.nih.gov/compound/10430549#section=2D-Structure", details: "Non-peptide MC4R agonist; formula C23H25N3O3." },
+            { name: "Ro 27-3225", cid: "5312124", link: "https://pubchem.ncbi.nlm.nih.gov/compound/5312124#section=2D-Structure", details: "Synthetic MC4R agonist; formula C24H28N4O3." },
+            { name: "Bremelanotide", cid: "9941379", link: "https://pubchem.ncbi.nlm.nih.gov/compound/9941379#section=2D-Structure", details: "MC4R agonist for sexual dysfunction/obesity; formula C50H68N14O10." }
+          ]
+        },
+        trial: {
+          design: "FIH SAD/MAD in healthy volunteers anticipated; IND submission H2 2026; not yet registered. No ClinicalTrials.gov IDs exist, consistent with preclinical status. Related MC4R agonists like setmelanotide have trials (e.g., NCT02896192 for early-onset POMC deficiency obesity).",
+          notes: [
+            "Pre-FIH: define release/stability, bioanalytical methods, IMP packaging.",
+            "Monitor for rare obesity combo/maintenance therapy potential.",
+            "No ongoing or registered clinical trials as program is advancing to IND-enabling."
+          ]
+        },
+        publications: {
+          summary: "No articles specifically on Superluminal's MC4R agonist. Related general publications on MC4R agonists include:",
+          list: [
+            { label: "Evaluation of a melanocortin-4 receptor (MC4R) agonist (Setmelanotide) in MC4R deficiency", url: "https://pubmed.ncbi.nlm.nih.gov/29031731/" },
+            { label: "The MC4R agonist, setmelanotide, is associated with an improvement in hypercapnic chemosensitivity and weight loss in male mice", url: "https://pubmed.ncbi.nlm.nih.gov/39542230/" },
+            { label: "Targeting melanocortin 4 receptor to treat sleep-disordered breathing in obesity", url: "https://pubmed.ncbi.nlm.nih.gov/40232848/" },
+            { label: "Investigation of setmelanotide, an MC4R agonist, for obesity in Smith-Magenis syndrome", url: "https://pubmed.ncbi.nlm.nih.gov/38987029/" },
+            { label: "Efficacy and Safety of Setmelanotide, a Melanocortin-4 Receptor Agonist, in Patients With Obesity Due to Variants in Genes Within the Melanocortin-4 Receptor Pathway: Results From Two Phase 3 Trials", url: "https://pubmed.ncbi.nlm.nih.gov/37888071/" },
+            { label: "MC4R Agonists: Structural Overview on Antiobesity Therapeutics", url: "https://pubmed.ncbi.nlm.nih.gov/29478721/" },
+            { label: "MC4R agonism promotes durable weight loss in patients with leptin receptor deficiency", url: "https://pubmed.ncbi.nlm.nih.gov/29736023/" }
+          ]
+        },
+        patents: {
+          summary: "No useful patents publicly filed or granted under Superluminal Medicines for the MC4R agonist. Searches across USPTO, EPO, and Google Patents yielded no results; composition-of-matter claims may appear as applications publish.",
+          links: [
+            { label: "USPTO Search — Superluminal MC4R", url: "https://patents.google.com/?assignee=Superluminal+Medicines&oq=assignee:(Superluminal+Medicines)+melanocortin-4+receptor" }
+          ]
+        },
+        news: {
+          summary: "Coverage focuses on the agonist's advancement (July 22, 2025) and Lilly deal (August 14, 2025).",
+          list: [
+            { label: "Superluminal Medicines Announces a Selective, Biased, MC4R Agonist is Advancing to IND-enabling Studies for the Treatment of Obesity", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-a-selective-biased-mc4r-agonist-is-advancing-to-ind-enabling-studies-for-the-treatment-of-obesity-302510239.html" },
+            { label: "Superluminal Medicines Advances Selective MC4R Agonist Toward Clinical Trials for Obesity", url: "https://www.pharmexec.com/view/superluminal-medicines-advances-selective-mc4r-agonist-clinical-trials-obesity" },
+            { label: "Superluminal Medicines advances MC4 receptor agonist for obesity", url: "https://www.bioworld.com/articles/722407-superluminal-medicines-advances-mc4-receptor-agonist-for-obesity" },
+            { label: "Superluminal Medicines Announces Collaboration with Eli Lilly and Company to Advance Small Molecule Therapeutics for Cardiometabolic Diseases and Obesity", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-collaboration-with-eli-lilly-and-company-to-advance-small-molecule-therapeutics-for-cardiometabolic-diseases-and-obesity-302529689.html" },
+            { label: "Lilly pens $1.3B pact with Superluminal to work on GPCR drugs", url: "https://www.fiercebiotech.com/biotech/superluminal-secures-13b-pact-backer-lilly-cardiometabolic-obesity-drugs" },
+            { label: "Eli Lilly Keeps Obesity Pipeline Fresh With $1.3B Superluminal Partnership", url: "https://www.biospace.com/business/eli-lilly-keeps-obesity-pipeline-fresh-with-1-3b-superluminal-partnership" },
+            { label: "Superluminal Medicines and Eli Lilly Form $1.3 Billion Collaboration Advancing Small-Molecule Therapeutics", url: "https://www.pharmexec.com/view/superluminal-medicines-eli-lilly-collaboration-advancing-small-molecule-therapeutics" },
+            { label: "Lilly Strikes $1.3 Billion GPCR Drug Discovery Pact with Superluminal", url: "https://www.2minutemedicine.com/lilly-strikes-1-3-billion-gpcr-drug-discovery-pact-with-superluminal/" },
+            { label: "Superluminal joins a $1.3B deal with series A backer Lilly", url: "https://www.bioworld.com/articles/723392-superluminal-joins-a-13b-deal-with-series-a-backer-lilly" },
+            { label: "Eli Lilly (LLY) Partners with Superluminal for AI Drug Discovery", url: "https://finance.yahoo.com/news/eli-lilly-lly-partners-superluminal-031455667.html" },
+            { label: "Lilly-backed Superluminal speeds toward the clinic with $120M", url: "https://www.fiercebiotech.com/biotech/superluminal-raises-120m-series-bring-membrane-receptor-drugs-clinic" },
+            { label: "Lilly signs $1.3 billion deal with Superluminal to discover obesity medicines", url: "https://www.reuters.com/business/healthcare-pharmaceuticals/lilly-signs-13-billion-deal-with-superluminal-discover-obesity-medicines-using-2025-08-14/" },
+            { label: "Superluminal Medicines brings in $120 million - C&EN", url: "https://cen.acs.org/business/start-ups/Superluminal-Medicines-brings-120-million/102/web/2024/09" },
+            { label: "Lilly Obesity Deal Gives Superluminal More Shots On GPCR Goals", url: "https://insights.citeline.com/scrip/lilly-obesity-deal-gives-superluminal-more-shots-on-gpcr-goals-R23K6MSWQVD43MUK5XCAUS6JM4/" }
+          ],
+          xPosts: [
+            { author: "松田豊-抗体薬物複合体のケミスト-", content: "Eli Lilly社が、AIを活用するスタートアップ企業Superluminal Medicinesと最大13億ドルの提携...開発対象としてはGPCを標的とした、新しい低分子薬。特に,肥満と関連するMC4RというGPCRが開発候補の一つ。", url: "https://x.com/Matsuda_PhDPhD/status/1956171946972111175" },
+            { author: "Shiroshiro", content: "Superluminal Medicines Announces a Selective, Biased, MC4R Agonist is Advancing to IND-enabling Studies for the Treatment of Obesity...", url: "https://x.com/Shiroshiro4565/status/1948142815709630490" }
+          ]
+        },
+        citations: [
+          { label: "[PDF] Superluminal Medicines Announces a Selective, Biased, MC4R ...", url: "https://www.superluminalrx.com/wp-content/uploads/SuperluminalPR_DC_FINAL_10pm.pdf" },
+          { label: "Superluminal Medicines Announces a Selective, Biased, MC4R ...", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-a-selective-biased-mc4r-agonist-is-advancing-to-ind-enabling-studies-for-the-treatment-of-obesity-302510239.html" },
+          { label: "Superluminal Medicines Announces Collaboration with Eli Lilly and ...", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-collaboration-with-eli-lilly-and-company-to-advance-small-molecule-therapeutics-for-cardiometabolic-diseases-and-obesity-302529689.html" },
+          { label: "MC4R Agonists: Structural Overview on Antiobesity Therapeutics", url: "https://pubmed.ncbi.nlm.nih.gov/29478721/" },
+          { label: "Structure elucidation of a human melanocortin-4 receptor specific ...", url: "https://pubmed.ncbi.nlm.nih.gov/39353917/" },
+          { label: "MCR4 agonist - Superluminal Medicines - AdisInsight - Springer", url: "https://adisinsight.springer.com/drugs/800083512" },
+          { label: "Pipeline - Superluminal Medicines", url: "https://www.superluminalrx.com/pipeline/" },
+          { label: "Superluminal Medicines Advances Selective MC4R Agonist Toward ...", url: "https://www.pharmexec.com/view/superluminal-medicines-advances-selective-mc4r-agonist-clinical-trials-obesity" },
+          { label: "Press & Publications - Superluminal Medicines", url: "https://www.superluminalrx.com/blog/" },
+          { label: "Superluminal Medicines advances MC4 receptor agonist for obesity", url: "https://www.bioworld.com/articles/722407-superluminal-medicines-advances-mc4-receptor-agonist-for-obesity" },
+          { label: "Rhythm Pharmaceuticals Presents Data on MC4R Agonists ...", url: "https://ir.rhythmtx.com/news-releases/news-release-details/rhythm-pharmaceuticals-presents-data-mc4r-agonists-setmelanotide" },
+          { label: "Lilly Strikes $1.3 Billion GPCR Drug Discovery Pact with Superluminal", url: "https://www.2minutemedicine.com/lilly-strikes-1-3-billion-gpcr-drug-discovery-pact-with-superluminal/" },
+          { label: "NCT02896192 | Setmelanotide for the Treatment of Early-Onset Pro ...", url: "https://www.clinicaltrials.gov/study/NCT02896192" },
+          { label: "[PDF] Superluminal Medicines Announces Collaboration with Eli Lilly and ...", url: "https://www.superluminalrx.com/wp-content/uploads/SUN_Lilly_PR_FINAL-with-logo.pdf" },
+          { label: "[PDF] Superluminal Medicines Closes $120 Million Series A Round", url: "https://www.superluminalrx.com/wp-content/uploads/Superluminal_Series_A_Financing_Press_Release-090924.pdf" },
+          { label: "Lilly pens $1.3B pact with Superluminal to work on GPCR drugs", url: "https://www.fiercebiotech.com/biotech/superluminal-secures-13b-pact-backer-lilly-cardiometabolic-obesity-drugs" },
+          { label: "Superluminal Medicines Closes $120 Million Series A Round", url: "https://www.globenewswire.com/news-release/2024/09/09/2942684/0/en/Superluminal-Medicines-Closes-120-Million-Series-A-Round.html" },
+          { label: "Superluminal Medicines Announces Collaboration with Eli Lilly and ...", url: "https://www.prnewswire.com/news-releases/superluminal-medicines-announces-collaboration-with-eli-lilly-and-company-to-advance-small-molecule-therapeutics-for-cardiometabolic-diseases-and-obesity-302529689.html" },
+          { label: "Eli Lilly Keeps Obesity Pipeline Fresh With $1.3B Superluminal ...", url: "https://www.biospace.com/business/eli-lilly-keeps-obesity-pipeline-fresh-with-1-3b-superluminal-partnership" },
+          { label: "Superluminal Medicines brings in $120 million - C&EN", url: "https://cen.acs.org/business/start-ups/Superluminal-Medicines-brings-120-million/102/web/2024/09" },
+          { label: "Superluminal Medicines and Eli Lilly Form $1.3 Billion Collaboration ...", url: "https://www.pharmexec.com/view/superluminal-medicines-eli-lilly-collaboration-advancing-small-molecule-therapeutics" },
+          { label: "Eli Lilly (LLY) Partners with Superluminal for AI Drug Discovery", url: "https://finance.yahoo.com/news/eli-lilly-lly-partners-superluminal-031455667.html" },
+          { label: "Lilly-backed Superluminal speeds toward the clinic with $120M", url: "https://www.fiercebiotech.com/biotech/superluminal-raises-120m-series-bring-membrane-receptor-drugs-clinic" },
+          { label: "Lilly signs $1.3 billion deal with Superluminal to discover obesity medicines", url: "https://www.reuters.com/business/healthcare-pharmaceuticals/lilly-signs-13-billion-deal-with-superluminal-discover-obesity-medicines-using-2025-08-14/" },
+          { label: "Evaluation of a melanocortin-4 receptor (MC4R) agonist ... - PubMed", url: "https://pubmed.ncbi.nlm.nih.gov/29031731/" },
+          { label: "The MC4R agonist, setmelanotide, is associated with an ... - PubMed", url: "https://pubmed.ncbi.nlm.nih.gov/39542230/" },
+          { label: "Targeting melanocortin 4 receptor to treat sleep-disordered ...", url: "https://pubmed.ncbi.nlm.nih.gov/40232848/" },
+          { label: "Investigation of setmelanotide, an MC4R agonist, for obesity in ...", url: "https://pubmed.ncbi.nlm.nih.gov/38987029/" },
+          { label: "Efficacy and Safety of Setmelanotide, a Melanocortin-4 Receptor ...", url: "https://pubmed.ncbi.nlm.nih.gov/37888071/" },
+          { label: "MC4R Agonists: Structural Overview on Antiobesity Therapeutics", url: "https://pubmed.ncbi.nlm.nih.gov/29478721/" },
+          { label: "Home - Superluminal", url: "https://superluminalrx.com/" },
+          { label: "Google Patents", url: "https://patents.google.com/" },
+          { label: "ClinicalTrials.gov", url: "https://clinicaltrials.gov/" },
+          { label: "None - PubMed", url: "https://pubmed.ncbi.nlm.nih.gov/" }
+        ],
+        bdNotes: "We support IND-enable → FIH for oral GPCR programs: tox batches, Phase-1 IMP supply, analytical method validation, and early SAD/MAD logistics. With your MC4R agonist advancing to IND, let's discuss optimizing heteroaryl scaffold scalability and impurity profiling.",
+        xInsights: "Recent posts highlight Lilly deal excitement, no controversies."
+      },
+      // Entry 2: MapLight Therapeutics
+      {
+        company: "MapLight Therapeutics",
+        candidate: "Two preclinical CNS small molecules",
+        modality: "Oral small molecules (CNS)",
+        target: "CNS targets (e.g., muscarinic agonists for schizophrenia/AD psychosis)",
+        enrollment: "IND-enabling",
+        lastUpdate: "2025-09-19",
+        employees: 109,
+        hiring: { status: "20+ active openings in clinical/RA/biometrics (scale-up indicator)", jobsUrl: "https://job-boards.greenhouse.io/maplighttherapeutics" },
+        funding: {
+          summary: "Series D $372.5M (July 2025), S-1 for $100M IPO (Sept 2025, ticker MPLT); total raised $800M+; strong runway. Previous: $225M Series C (Oct 2023). Funding supports development of multiple clinical candidates, including Phase 2 studies.",
+          cashScore: 5,
+          details: "Series D: $372.5M led by Novo Holdings, with participation from 5AM Ventures and others; to advance muscarinic receptor agonist platform. IPO filing: Up to $100M on NASDAQ (MPLT), filed September 21, 2025. Series C: $225M in October 2023 for neurological and psychiatric disorders.",
+          links: [
+            { label: "Series D News", url: "https://www.bioxconomy.com/investment/maplight-scores-372-5m-to-chart-new-territory-in-cns-drug-development" },
+            { label: "IPO Filing", url: "https://firstwordpharma.com/story/6094318" },
+            { label: "Series C News", url: "https://firstwordpharma.com/story/5795360" }
+          ]
+        },
+        irLinks: [
+          { label: "S-1 Filing", url: "https://www.sec.gov/Archives/edgar/data/1770069/000119312525209084/d741179ds1.htm" },
+          { label: "Publications Hub", url: "https://maplightrx.com/publications/" }
+        ],
+        ctQuery: "https://clinicaltrials.gov/search?term=MapLight%20Therapeutics",
+        patentSearch: "https://patents.google.com/?assignee=MapLight+Therapeutics",
+        emailDomain: "maplightrx.com",
+        contacts: [
+          { name: "Christopher Kroeger, MD, MBA", title: "CEO", email: "chris.kroeger@maplightrx.com", linkedin: "https://www.linkedin.com/in/chriskroeger" },
+          { name: "Erin Pennock Foff, MD, Ph.D.", title: "CMO", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Two CNS small molecules nearing IND; muscarinic receptor agonists for schizophrenia and Alzheimer's psychosis; circuit-based discovery using optogenetics/STARmap.",
+          details: [
+            "Balance BBB permeability vs. metabolic liability; heteroaryl amides/spirocycles/CNS-PK optimizations.",
+            "Prioritize salt/polymorph screening, impurity ID; M1/M4 selectivity focus.",
+            "Platform targets brain circuits for novel CNS therapies."
+          ],
+          links: [
+            { label: "Platform Overview", url: "https://maplightrx.com/platform/" }
+          ],
+          chembl: "No exact structure or ChEMBL ID for undisclosed molecules. Related muscarinic agonists: Xanomeline (CHEMBL21536).",
+          pubchem: "No PubChem entry; no SIDs/CIDs. Related: Xanomeline (CID 60809), Sabcomeline (CID 9574246).",
+          pubchemTable: [
+            { name: "Xanomeline", cid: "60809", link: "https://pubchem.ncbi.nlm.nih.gov/compound/60809#section=2D-Structure", details: "Muscarinic agonist for schizophrenia; formula C14H23N3OS." },
+            { name: "Sabcomeline", cid: "9574246", link: "https://pubchem.ncbi.nlm.nih.gov/compound/9574246#section=2D-Structure", details: "M1 agonist for Alzheimer's; formula C10H15N5O." }
+          ]
+        },
+        trial: {
+          design: "Preclinical candidates nearing IND; FIH asset-specific; Phase 2 ongoing for other assets (e.g., ML-004 for schizophrenia, NCT04719312). No IDs for new candidates.",
+          notes: [
+            "Compress CMC + analytical for SAD/MAD-ready DS/DP, CNS-fit release testing.",
+            "Align on BBB-optimized scaffolds."
+          ]
+        },
+        publications: {
+          summary: "No specific articles on preclinical candidates. General CNS/muscarinic publications include:",
+          list: [
+            { label: "Muscarinic receptor agonists in the treatment of Alzheimer's disease", url: "https://pubmed.ncbi.nlm.nih.gov/12369857/" },
+            { label: "Xanomeline-trospium for schizophrenia", url: "https://pubmed.ncbi.nlm.nih.gov/37948437/" }
+          ]
+        },
+        patents: {
+          summary: "No public patents for new CNS molecules; monitor as publish. Related patents for platform technologies may exist.",
+          links: [
+            { label: "USPTO Search — MapLight", url: "https://patents.google.com/?assignee=MapLight+Therapeutics" }
+          ]
+        },
+        news: {
+          summary: "Focus on Series D (July 2025) and IPO filing (September 2025).",
+          list: [
+            { label: "MapLight scores $372.5m to chart new territory in CNS drug development", url: "https://www.bioxconomy.com/investment/maplight-scores-372-5m-to-chart-new-territory-in-cns-drug-development" },
+            { label: "CNS disorder biotech MapLight Therapeutics files for a $100 million IPO", url: "https://firstwordpharma.com/story/6094318" },
+            { label: "MapLight lines up an IPO in bid to challenge Bristol Myers in schizophrenia", url: "https://www.biopharmadive.com/news/maplight-ipo-cns-schizophrenia-alzheimers-psychosis/760734/" },
+            { label: "MapLight Therapeutics investment analysis", url: "https://www.baybridgebio.com/blog/maplight-oct-2023" },
+            { label: "MapLight Therapeutics Closes $225 Million Series C Funding", url: "https://firstwordpharma.com/story/5795360" },
+            { label: "FDA Provides Guidance on Pediatric CNS Cancer Trial", url: "https://www.targetedonc.com/view/fda-provides-guidance-on-pediatric-cns-cancer-trial" }
+          ],
+          xPosts: []  // No specific X posts in searches
+        },
+        citations: [
+          { label: "MapLight scores $372.5m to chart new territory in CNS drug ...", url: "https://www.bioxconomy.com/investment/maplight-scores-372-5m-to-chart-new-territory-in-cns-drug-development" },
+          { label: "CNS disorder biotech MapLight Therapeutics files for a $100 million ...", url: "https://firstwordpharma.com/story/6094318" },
+          { label: "MapLight lines up an IPO in bid to challenge Bristol Myers ...", url: "https://www.biopharmadive.com/news/maplight-ipo-cns-schizophrenia-alzheimers-psychosis/760734/" },
+          { label: "MapLight Therapeutics investment analysis - Bay Bridge Bio", url: "https://www.baybridgebio.com/blog/maplight-oct-2023" },
+          { label: "MapLight Therapeutics Closes $225 Million Series C Funding ...", url: "https://firstwordpharma.com/story/5795360" },
+          { label: "FDA Provides Guidance on Pediatric CNS Cancer Trial", url: "https://www.targetedonc.com/view/fda-provides-guidance-on-pediatric-cns-cancer-trial" }
+        ],
+        bdNotes: "Pre-FIH CNS: we compress CMC + analytical readiness to deliver SAD/MAD-ready DS/DP, CNS-fit release testing, and impurity profiling. With your preclinical candidates nearing IND, let's align on BBB-optimized scaffolds.",
+        xInsights: "IPO buzz positive; hiring focus on clinical ops."
+      },
+      // Entry 3: Structure Therapeutics
+      {
+        company: "Structure Therapeutics (NASDAQ: GPCR)",
+        candidate: "ACCG-2671",
+        modality: "Oral small molecule (dual-mechanism amylin-based)",
+        target: "Amylin/calcitonin receptor agonist (DACRA)",
+        enrollment: "Phase 1 planned",
+        lastUpdate: "2025-08-09",
+        employees: 163,
+        hiring: { status: "7+ active openings in operations, QA, supply chain", jobsUrl: "https://ir.structuretx.com/" },
+        funding: {
+          summary: "Cash $836.9M (Q2 2025), runway through 2027; $300M placement (2023).",
+          cashScore: 5,
+          details: "Cash and equivalents $836.9M as of March 31, 2025 (Q1 report); expected to fund operations through at least 2027. Q2 2025 financial results reported August 6, 2025. Previous $300M private placement in 2023. Strong ability to outsource speed-ups.",
+          links: [
+            { label: "Q1 2025 Financials", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-first-quarter-2025-financial" },
+            { label: "Q2 2025 Financials", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-second-quarter-2025-financial" }
+          ]
+        },
+        irLinks: [
+          { label: "Q1 2025 Financials", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-first-quarter-2025-financial" },
+          { label: "Q2 2025 Financials", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-second-quarter-2025-financial" },
+          { label: "ADA 2025 Abstract", url: "https://diabetesjournals.org/diabetes/article/74/Supplement_1/181-LB/156378/181-LB-ACCG-2671-A-Novel-Small-Molecule-Amylin" }
+        ],
+        ctQuery: "https://clinicaltrials.gov/search?term=ACCG-2671",
+        patentSearch: "https://patents.google.com/?assignee=Structure+Therapeutics",
+        emailDomain: "structuretx.com",
+        contacts: [
+          { name: "Raymond Stevens, PhD", title: "CEO", email: "raymond.stevens@structuretx.com", linkedin: "https://www.linkedin.com/in/raymond-stevens-737a34129" },
+          { name: "Blai Coll, MD, PhD", title: "CMO", email: "blai.coll@structuretx.com", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "Oral small-molecule amylin/calcitonin receptor agonist (DACRA); preclinical PK/PD/weight-loss (ADA 2025); combo potential with GLP-1 RA. ACCG-2671 is the most advanced oral small molecule amylin-based drug candidate.",
+          details: [
+            "Peptidomimetic tendencies → solid-form control (polymorph/solvate), permeability, first-pass risk.",
+            "Pre-Phase-1: lock salt form, photo-stability, discriminating assays; fewer protecting-group manipulations in route.",
+            "Dose-dependent weight loss in preclinical models, including combo with GLP-1 RA."
+          ],
+          links: [
+            { label: "IR Updates", url: "https://ir.structuretx.com/" },
+            { label: "Amylin Development Candidate PDF", url: "https://ir.structuretx.com/static-files/56283ffa-a413-4d66-b825-578518c83baa" }
+          ],
+          chembl: "No exact structure or ChEMBL ID for ACCG-2671 (preclinical). Related amylin agonists: Pramlintide (CHEMBL1208045).",
+          pubchem: "No PubChem entry for ACCG-2671; no SIDs/CIDs. Related: Pramlintide (CID 16132446), Salmon calcitonin (CID 16129616).",
+          pubchemTable: [
+            { name: "Pramlintide", cid: "16132446", link: "https://pubchem.ncbi.nlm.nih.gov/compound/16132446#section=2D-Structure", details: "Amylin analog for diabetes/obesity; formula C171H267N51O53S2." },
+            { name: "Salmon calcitonin", cid: "16129616", link: "https://pubchem.ncbi.nlm.nih.gov/compound/16129616#section=2D-Structure", details: "Calcitonin agonist; formula C145H240N44O48S2." }
+          ]
+        },
+        trial: {
+          design: "IND-enabling ongoing; Phase 1 (SAD/MAD) by YE 2025 in healthy volunteers; metabolic readouts. No IDs yet; first-in-human expected YE 2025.",
+          notes: [
+            "Deliver Phase-1-grade oral API with parallel IMP packaging + stability.",
+            "Set up SAD/MAD supply, solid-state/polymorph controls."
+          ]
+        },
+        publications: {
+          summary: "No specific on ACCG-2671. Related amylin agonist publications include:",
+          list: [
+            { label: "Novel Oral Small Molecule ACCG-2671—A Dual Amylin and Calcitonin Receptor Agonist Development Candidate for Obesity Therapy", url: "https://diabetesjournals.org/diabetes/article/74/Supplement_1/181-LB/156378/181-LB-ACCG-2671-A-Novel-Small-Molecule-Amylin" }
+          ]
+        },
+        patents: {
+          summary: "No public patents for ACCG-2671; monitor as publish. Structure has patents for GPCR platforms.",
+          links: [
+            { label: "USPTO Search — Structure ACCG-2671", url: "https://patents.google.com/?assignee=Structure+Therapeutics&oq=assignee:(Structure+Therapeutics)+ACCG-2671" }
+          ]
+        },
+        news: {
+          summary: "Focus on ACCG-2671 selection (Dec 2024) and financials (Aug 2025).",
+          list: [
+            { label: "Structure Therapeutics Announces Selection of Lead Oral Small Molecule Amylin Receptor Agonist ACCG-2671 for the Treatment of Obesity", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-announces-selection-lead-oral-small" },
+            { label: "Press Release - Structure Therapeutics", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-announces-two-late-breaking-poster" },
+            { label: "Structure Therapeutics Reports Second Quarter 2025 Financial Results", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-second-quarter-2025-financial" },
+            { label: "Structure Therapeutics Advances Oral Amylin Agonist ACCG-2671", url: "https://trial.medpath.com/news/e31e1aadb96eacc6/structure-therapeutics-unveils-breakthrough-oral-obesity-drug-first-in-class-amylin" },
+            { label: "Amylin Development Candidate ACCG-2671 - Structure Therapeutics", url: "https://ir.structuretx.com/static-files/56283ffa-a413-4d66-b825-578518c83baa" },
+            { label: "Structure Therapeutics Announces Selection of Lead Oral Small Molecule", url: "https://www.theglobeandmail.com/investing/markets/stocks/GPCR/pressreleases/30097237/structure-therapeutics-announces-selection-of-lead-oral-small-molecule-amylin-receptor-agonist-accg-2671-for-the-treatment-of-obesity/" },
+            { label: "Structure Therapeutics Announces Two Late-Breaking Poster Presentations", url: "https://finance.yahoo.com/news/structure-therapeutics-announces-two-breaking-233000891.html" },
+            { label: "Home (Duplicate) | Structure Therapeutics", url: "https://structuretx.com/home-new/" },
+            { label: "Structure Therapeutics Reports Second Quarter 2025 Financial Results", url: "https://www.nasdaq.com/press-release/structure-therapeutics-reports-second-quarter-2025-financial-results-and-recent" },
+            { label: "Structure Therapeutics Reports First Quarter 2025 Financial Results", url: "https://firstwordpharma.com/story/5959091" }
+          ],
+          xPosts: []  // No specific in searches
+        },
+        citations: [
+          { label: "Structure Therapeutics Announces Selection of Lead Oral Small ...", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-announces-selection-lead-oral-small" },
+          { label: "Press Release - Structure Therapeutics", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-announces-two-late-breaking-poster" },
+          { label: "Structure Therapeutics Reports Second Quarter 2025 Financial ...", url: "https://ir.structuretx.com/news-releases/news-release-details/structure-therapeutics-reports-second-quarter-2025-financial" },
+          { label: "Structure Therapeutics Advances Oral Amylin Agonist ACCG-2671 ...", url: "https://trial.medpath.com/news/e31e1aadb96eacc6/structure-therapeutics-unveils-breakthrough-oral-obesity-drug-first-in-class-amylin" },
+          { label: "[PDF] Amylin Development Candidate ACCG-2671 - Structure Therapeutics", url: "https://ir.structuretx.com/static-files/56283ffa-a413-4d66-b825-578518c83baa" },
+          { label: "Structure Therapeutics Announces Selection of Lead Oral Small ...", url: "https://www.theglobeandmail.com/investing/markets/stocks/GPCR/pressreleases/30097237/structure-therapeutics-announces-selection-of-lead-oral-small-molecule-amylin-receptor-agonist-accg-2671-for-the-treatment-of-obesity/" },
+          { label: "Structure Therapeutics Announces Two Late-Breaking Poster ...", url: "https://finance.yahoo.com/news/structure-therapeutics-announces-two-breaking-233000891.html" },
+          { label: "Home (Duplicate) | Structure Therapeutics", url: "https://structuretx.com/home-new/" },
+          { label: "Structure Therapeutics Reports Second Quarter 2025 Financial ...", url: "https://www.nasdaq.com/press-release/structure-therapeutics-reports-second-quarter-2025-financial-results-and-recent" },
+          { label: "Structure Therapeutics Reports First Quarter 2025 Financial Results ...", url: "https://firstwordpharma.com/story/5959091" }
+        ],
+        bdNotes: "We can deliver Phase-1-grade oral API with parallel IMP packaging + stability, set up SAD/MAD supply, and run solid-state/polymorph controls for your DACRA program.",
+        xInsights: "Focus on obesity pipeline; positive on ACCG-2671 data."
+      },
+      // Entry 4: Addex Therapeutics + Indivior
+      {
+        company: "Addex Therapeutics + Indivior",
+        candidate: "GABA_B PAM (oral small molecule)",
+        modality: "Oral small molecule (CNS)",
+        target: "GABA_B positive allosteric modulator",
+        enrollment: "Post-IND-enabling",
+        lastUpdate: "2025-08-08",
+        employees: "10-15",
+        hiring: { status: "No open positions (rightsized, strong CRO/CMO intent)", jobsUrl: "https://www.addextherapeutics.com/en/about-us/careers/" },
+        funding: {
+          summary: "Lean ops; $5M equity (2023); Indivior collaboration milestones; cash runway to mid-2026 post-Neurosterix spinout. Q1 2025 cash CHF2.8M.",
+          cashScore: 2,
+          details: "Strong cash position of CHF2.8 million at end of Q1 2025. Full year 2024 financial results reported April 2025. Indivior selected GABAB PAM for development in substance use disorders, started IND enabling in H1 2025. Collaboration extended until June 2024 with $3M grant in 2023.",
+          links: [
+            { label: "Q1 2025 Financial Results", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-therapeutics-reports-q1-2025-financial-results-and-provides-corporate-update/" },
+            { label: "Full Year 2024 Financial Results", url: "https://www.biospace.com/press-releases/addex-reports-full-year-2024-financial-results-and-provides-corporate-update" },
+            { label: "Addex wins $3m to research substance use therapy", url: "https://www.clinicaltrialsarena.com/news/addex-wins-3m-to-research-substance-use-therapy/" }
+          ]
+        },
+        irLinks: [
+          { label: "HY-2025 Update", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-therapeutics-reports-2025-half-year-and-second-quarter-financial-results-and-provides-corporate-update/" },
+          { label: "IND-enabling Note", url: "https://www.addextherapeutics.com/en/investors/ad-hoc-announcements-art-53-lr/addex-partner-indivior-advances-gabab-positive-allosteric-modulator-program-successfully-through-ind-enabling-studies/" }
+        ],
+        ctQuery: "https://clinicaltrials.gov/search?term=Addex%20GABA%20B%20PAM",
+        patentSearch: "https://patents.google.com/?assignee=Addex+Therapeutics+Indivior",
+        emailDomain: "addextherapeutics.com",
+        contacts: [
+          { name: "Tim Dyer", title: "CEO", email: "tim.dyer@addextherapeutics.com", linkedin: "https://www.linkedin.com/in/tim-dyer" },
+          { name: "Roger Mills", title: "CMO", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "GABA_B positive allosteric modulator; informed by ADX71441 literature; CNS efficacy in SUD, OAB, pain models. Novel, potent and selective PAM with potential for anxiety, pain, spasticity.",
+          details: [
+            "Chemotypes with stereocenters, allylic substitutions, lipophilicity tuning.",
+            "Watch enantiopurity, salt-form selection, late-stage functionalization robustness."
+          ],
+          links: [
+            { label: "GABAB PAM - Substance Use Disorder", url: "https://www.addextherapeutics.com/en/pipeline/researches/gabab-pam-sub/" },
+            { label: "PubMed — ADX71441", url: "https://pubmed.ncbi.nlm.nih.gov/?term=ADX71441" }
+          ],
+          chembl: "ADX71441 (CHEMBL3354303) as related compound.",
+          pubchem: "ADX71441 (CID 46854758); formula C15H21F2N3O3S.",
+          pubchemTable: [
+            { name: "ADX71441", cid: "46854758", link: "https://pubchem.ncbi.nlm.nih.gov/compound/46854758#section=2D-Structure", details: "GABA_B PAM; formula C15H21F2N3O3S; preclinical for anxiety/pain." }
+          ]
+        },
+        trial: {
+          design: "Advanced through IND-enabling (May 2025); Phase 1 imminent; not yet listed. Related ADX71441 had preclinical studies only.",
+          notes: [
+            "External IND→FIH CMC: tech-transfer, IMP/QP release (EU/UK), CMC authoring for IND/IMPD.",
+            "DS/DP scale-up with impurity control."
+          ]
+        },
+        publications: {
+          summary: "ADX71441 literature informs; robust anti-tussive activity in models.",
+          list: [
+            { label: "The drug candidate, ADX71441, is a novel, potent and selective ...", url: "https://pubmed.ncbi.nlm.nih.gov/27889489/" },
+            { label: "Addex GABAB PAM Candidate Demonstrates Robust Anti-Tussive ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-gabab-pam-candidate-demonstrates-robust-anti-tussive-activity-multiple-chronic-cough-preclinical-models/" }
+          ]
+        },
+        patents: {
+          summary: "Patents for ADX71441 and GABAB PAM series; pull for route clues.",
+          links: [
+            { label: "USPTO Search — Addex Indivior GABA_B", url: "https://patents.google.com/?assignee=Addex+Therapeutics+Indivior" }
+          ]
+        },
+        news: {
+          summary: "IND advance (May 2025), Q1 financials (June 2025).",
+          list: [
+            { label: "Addex Partner Indivior Advances GABAB Positive Allosteric ...", url: "https://www.addextherapeutics.com/en/investors/ad-hoc-announcements-art-53-lr/addex-partner-indivior-advances-gabab-positive-allosteric-modulator-program-successfully-through-ind-enabling-studies/" },
+            { label: "Addex Therapeutics Reports Q1 2025 Financial Results and ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-therapeutics-reports-q1-2025-financial-results-and-provides-corporate-update/" },
+            { label: "Addex Partner Indivior Advances GABAB Positive Allosteric", url: "https://www.globenewswire.com/news-release/2025/05/12/3078772/0/en/Addex-Partner-Indivior-Advances-GABAB-Positive-Allosteric-Modulator-Program-Successfully-Through-IND-Enabling-Studies.html" },
+            { label: "GABAB PAM - Substance Use Disorder - Addex therapeutics", url: "https://www.addextherapeutics.com/en/pipeline/researches/gabab-pam-sub/" },
+            { label: "Addex GABAB PAM Candidate Demonstrates Robust Anti-Tussive ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-gabab-pam-candidate-demonstrates-robust-anti-tussive-activity-multiple-chronic-cough-preclinical-models/" },
+            { label: "Addex Reports Full Year 2024 Financial Results and Provides ...", url: "https://www.biospace.com/press-releases/addex-reports-full-year-2024-financial-results-and-provides-corporate-update" },
+            { label: "The drug candidate, ADX71441, is a novel, potent and selective ...", url: "https://pubmed.ncbi.nlm.nih.gov/27889489/" },
+            { label: "Addex and Indivior select compounds from GABA-B PAM collaboration", url: "https://www.bioworld.com/articles/711859-addex-and-indivior-select-compounds-from-gaba-b-pam-collaboration" },
+            { label: "Addex and Indivior Select Clinical Candidates from GABAB Positive ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-and-indivior-select-clinical-candidates-gabab-positive-allosteric-modulator-research-collaboration/" },
+            { label: "Addex wins $3m to research substance use therapy", url: "https://www.clinicaltrialsarena.com/news/addex-wins-3m-to-research-substance-use-therapy/" }
+          ],
+          xPosts: []  // No specific
+        },
+        citations: [
+          { label: "Addex Partner Indivior Advances GABAB Positive Allosteric ...", url: "https://www.addextherapeutics.com/en/investors/ad-hoc-announcements-art-53-lr/addex-partner-indivior-advances-gabab-positive-allosteric-modulator-program-successfully-through-ind-enabling-studies/" },
+          { label: "Addex Therapeutics Reports Q1 2025 Financial Results and ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-therapeutics-reports-q1-2025-financial-results-and-provides-corporate-update/" },
+          { label: "Addex Partner Indivior Advances GABAB Positive Allosteric", url: "https://www.globenewswire.com/news-release/2025/05/12/3078772/0/en/Addex-Partner-Indivior-Advances-GABAB-Positive-Allosteric-Modulator-Program-Successfully-Through-IND-Enabling-Studies.html" },
+          { label: "GABAB PAM - Substance Use Disorder - Addex therapeutics", url: "https://www.addextherapeutics.com/en/pipeline/researches/gabab-pam-sub/" },
+          { label: "Addex GABAB PAM Candidate Demonstrates Robust Anti-Tussive ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-gabab-pam-candidate-demonstrates-robust-anti-tussive-activity-multiple-chronic-cough-preclinical-models/" },
+          { label: "Addex Reports Full Year 2024 Financial Results and Provides ...", url: "https://www.biospace.com/press-releases/addex-reports-full-year-2024-financial-results-and-provides-corporate-update" },
+          { label: "The drug candidate, ADX71441, is a novel, potent and selective ...", url: "https://pubmed.ncbi.nlm.nih.gov/27889489/" },
+          { label: "Addex and Indivior select compounds from GABA-B PAM collaboration", url: "https://www.bioworld.com/articles/711859-addex-and-indivior-select-compounds-from-gaba-b-pam-collaboration" },
+          { label: "Addex and Indivior Select Clinical Candidates from GABAB Positive ...", url: "https://www.addextherapeutics.com/en/investors/press-releases/addex-and-indivior-select-clinical-candidates-gabab-positive-allosteric-modulator-research-collaboration/" },
+          { label: "Addex wins $3m to research substance use therapy", url: "https://www.clinicaltrialsarena.com/news/addex-wins-3m-to-research-substance-use-therapy/" }
+        ],
+        bdNotes: "External IND→FIH CMC arm: tech-transfer, IMP/QP release (EU/UK), CMC authoring for IND/IMPD, and DS/DP scale-up with impurity control for your GABAB PAM.",
+        xInsights: "No recent activity; focus on SUD program."
+      },
+      // Entry 5: BioLineRx + Hemispherian
+      {
+        company: "BioLineRx + Hemispherian (JV)",
+        candidate: "GLIX1",
+        modality: "Oral small molecule (DDR/TET2-axis)",
+        target: "TET2-modulating (increases 5-hmC, triggers DDR)",
+        enrollment: "IND-cleared",
+        lastUpdate: "2025-09-29",
+        employees: "28 / 5-10",
+        hiring: { status: "No public openings (small teams, outsourcing-friendly)", jobsUrl: "https://ir.biolinerx.com/" },
+        funding: {
+          summary: "BioLineRx $28.2M cash (June 2025), runway to 1H 2027; JV announced Sep 2025 with Norwegian grants.",
+          cashScore: 3,
+          details: "BioLineRx cash $28.2M as of June 30, 2025; guides runway into 1H 2027. JV structure leverages BioLineRx public capital + Norwegian grants; Hemispherian contributes global rights to GLIX1.",
+          links: [
+            { label: "JV PR", url: "https://www.prnewswire.com/news-releases/biolinerx-ltd-and-hemispherian-as-establish-joint-venture-to-develop-glix1-a-first-in-class-oral-small-molecule-targeting-dna-damage-response-in-glioblastoma-and-other-cancers-302569321.html" },
+            { label: "Q2 2025 Financials", url: "https://ir.biolinerx.com/news-releases/news-release-details/biolinerx-reports-second-quarter-2025-financial-results-and" }
+          ]
+        },
+        irLinks: [
+          { label: "JV PR — IND cleared", url: "https://www.prnewswire.com/news-releases/biolinerx-ltd-and-hemispherian-as-establish-joint-venture-to-develop-glix1-a-first-in-class-oral-small-molecule-targeting-dna-damage-response-in-glioblastoma-and-other-cancers-302569321.html" },
+          { label: "Q2 2025 Financials", url: "https://ir.biolinerx.com/news-releases/news-release-details/biolinerx-reports-second-quarter-2025-financial-results-and" }
+        ],
+        ctQuery: "https://clinicaltrials.gov/search?term=GLIX1",
+        patentSearch: "https://patents.google.com/?assignee=Hemispherian",
+        emailDomain: "biolinerx.com, hemispherian.com",
+        contacts: [
+          { name: "Philip Serlin", title: "CEO, BioLineRx", email: "philip.serlin@biolinerx.com", linkedin: "https://www.linkedin.com/in/philip-serlin" },
+          { name: "Zeno Albisser", title: "CEO, Hemispherian", email: "zeno.albisser@hemispherian.com", linkedin: "https://www.linkedin.com/" }
+        ],
+        compound: {
+          summary: "First-in-class oral TET2-modulator; BBB-penetrant; increases 5-hmC for DDR/tumor cytotoxicity; GBM focus. Eradicates tumors in animal models with limited side effects.",
+          details: [
+            "Brain-penetrant oncology agent; prioritize particle-size control/micronization, permeability, CNS-fit impurities.",
+            "Light/thermal stability; patents for intermediates/routes."
+          ],
+          links: [
+            { label: "Mechanism Page", url: "https://hemispherian.com/" },
+            { label: "GBM Preclinical Abstract", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10639406/" }
+          ],
+          chembl: "No exact structure or ChEMBL ID for GLIX1 (preclinical). Related TET2 modulators: Bobcat339 (CHEMBL5189380).",
+          pubchem: "No PubChem entry; no SIDs/CIDs. Related: Bobcat339 (CID 145948305), TETi76 (no CID).",
+          pubchemTable: [
+            { name: "Bobcat339", cid: "145948305", link: "https://pubchem.ncbi.nlm.nih.gov/compound/145948305#section=2D-Structure", details: "TET inhibitor; formula C16H12ClN3O2." }
+          ]
+        },
+        trial: {
+          design: "IND cleared (Aug 2025); Phase 1/2a Q1 2026 (pre-enrollment); 3+3 escalation with expansion cohorts in recurrent GBM, monotherapy, combo with standard care.",
+          notes: [
+            "Stand up IMP manufacturing for oncology Phase 1/2a, CNS-specific analytics, stability.",
+            "Global trial supply/packaging."
+          ]
+        },
+        publications: {
+          summary: "Preclinical on GLIX1; general TET2/GBM.",
+          list: [
+            { label: "DDDR-19. FIRST-IN-CLASS CANCER THERAPEUTICS ...", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC10639406/" },
+            { label: "TET1 regulates DNA repair in human glial cells", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7184935/" }
+          ]
+        },
+        patents: {
+          summary: "Patents under Hemispherian for key intermediates/routes; reveal upon publish.",
+          links: [
+            { label: "USPTO Search — Hemispherian GLIX1", url: "https://patents.google.com/?assignee=Hemispherian&oq=assignee:(Hemispherian)+GLIX1" }
+          ]
+        },
+        news: {
+          summary: "JV announcement (Sep 2025), IND clearance (Aug 2025).",
+          list: [
+            { label: "BioLineRx Ltd. and Hemispherian AS Establish Joint Venture to ...", url: "https://www.prnewswire.com/news-releases/biolinerx-ltd-and-hemispherian-as-establish-joint-venture-to-develop-glix1-a-first-in-class-oral-small-molecule-targeting-dna-damage-response-in-glioblastoma-and-other-cancers-302569321.html" },
+            { label: "BioLineRx forges joint cancer venture with Norwegian biotech", url: "https://www.fiercebiotech.com/biotech/biolinerx-forges-joint-venture-develop-cancer-candidate-norwegian-biotech" },
+            { label: "BioLineRx and Hemispherian form joint venture to develop ...", url: "https://www.investing.com/news/company-news/biolinerx-and-hemispherian-form-joint-venture-to-develop-glix1-93CH-4260249" },
+            { label: "BioLineRx Forms Joint Venture to Develop GBM Cancer Drug GLIX1", url: "https://www.stocktitan.net/news/BLRX/bio-line-rx-ltd-and-hemispherian-as-establish-joint-venture-to-2xujqhywinmm.html" },
+            { label: "BioLineRx and Hemispherian Launch Joint Venture to Develop ...", url: "https://www.msn.com/en-us/money/savingandinvesting/biolinerx-and-hemispherian-launch-joint-venture-to-develop-glix1-for-glioblastoma/ar-AA1NwYfg" },
+            { label: "Israeli Biotech Partners with Norwegian Firm on New Brain", url: "https://israel.com/breaking-only/israeli-biotech-partners-with-norwegian-firm-on-new-brain-cancer-drug/" },
+            { label: "FDA Clears IND for GLIX1 in Glioblastoma, Phase 1 Study to Proceed", url: "https://www.targetedonc.com/view/fda-clears-ind-for-glix1-in-glioblastoma-phase-1-study-to-proceed" },
+            { label: "Hemispherian Receives FDA IND Clearance for First-in ... - BioSpace", url: "https://www.biospace.com/press-releases/hemispherian-receives-fda-ind-clearance-for-first-in-class-glioblastoma-therapeutic-glix1" },
+            { label: "BioLineRx, Hemispherian AS establish joint venture to develop GLIX1", url: "https://www.msn.com/en-us/money/savingandinvesting/biolinerx-hemispherian-as-establish-joint-venture-to-develop-glix1/ar-AA1NwAiE" },
+            { label: "BioLineRx (BLRX) and Hemispherian Collaborate on Innovative Canc", url: "https://www.gurufocus.com/news/3123268/biolinerx-blrx-and-hemispherian-collaborate-on-innovative-cancer-therapy?utm_source=marketwatch&utm_medium=syndication&utm_campaign=headlines&r=4bf001661e6fdd88d0cd7a5659ff9748" }
+          ],
+          xPosts: []  // No specific
+        },
+        citations: [
+          { label: "BioLineRx Ltd. and Hemispherian AS Establish Joint Venture to ...", url: "https://www.prnewswire.com/news-releases/biolinerx-ltd-and-hemispherian-as-establish-joint-venture-to-develop-glix1-a-first-in-class-oral-small-molecule-targeting-dna-damage-response-in-glioblastoma-and-other-cancers-302569321.html" },
+          { label: "BioLineRx forges joint cancer venture with Norwegian biotech", url: "https://www.fiercebiotech.com/biotech/biolinerx-forges-joint-venture-develop-cancer-candidate-norwegian-biotech" },
+          { label: "BioLineRx and Hemispherian form joint venture to develop ...", url: "https://www.investing.com/news/company-news/biolinerx-and-hemispherian-form-joint-venture-to-develop-glix1-93CH-4260249" },
+          { label: "BioLineRx Forms Joint Venture to Develop GBM Cancer Drug GLIX1", url: "https://www.stocktitan.net/news/BLRX/bio-line-rx-ltd-and-hemispherian-as-establish-joint-venture-to-2xujqhywinmm.html" },
+          { label: "BioLineRx and Hemispherian Launch Joint Venture to Develop ...", url: "https://www.msn.com/en-us/money/savingandinvesting/biolinerx-and-hemispherian-launch-joint-venture-to-develop-glix1-for-glioblastoma/ar-AA1NwYfg" },
+          { label: "Israeli Biotech Partners with Norwegian Firm on New Brain", url: "https://israel.com/breaking-only/israeli-biotech-partners-with-norwegian-firm-on-new-brain-cancer-drug/" },
+          { label: "FDA Clears IND for GLIX1 in Glioblastoma, Phase 1 Study to Proceed", url: "https://www.targetedonc.com/view/fda-clears-ind-for-glix1-in-glioblastoma-phase-1-study-to-proceed" },
+          { label: "Hemispherian Receives FDA IND Clearance for First-in ... - BioSpace", url: "https://www.biospace.com/press-releases/hemispherian-receives-fda-ind-clearance-for-first-in-class-glioblastoma-therapeutic-glix1" },
+          { label: "BioLineRx, Hemispherian AS establish joint venture to develop GLIX1", url: "https://www.msn.com/en-us/money/savingandinvesting/biolinerx-hemispherian-as-establish-joint-venture-to-develop-glix1/ar-AA1NwAiE" },
+          { label: "BioLineRx (BLRX) and Hemispherian Collaborate on Innovative Canc", url: "https://www.gurufocus.com/news/3123268/biolinerx-blrx-and-hemispherian-collaborate-on-innovative-cancer-therapy?utm_source=marketwatch&utm_medium=syndication&utm_campaign=headlines&r=4bf001661e6fdd88d0cd7a5659ff9748" }
+        ],
+        bdNotes: "We can stand up IMP manufacturing for oncology Phase 1/2a, including CNS-specific analytics, stability, and global trial supply/packaging for your TET2-modulator.",
+        xInsights: "JV announcement positive; focus on GBM."
+      }
+    ];
+
+
+    // Helper functions
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    function getStatusBadge(enrollment) {
+      const baseClass = 'status-badge';
+      const dot = '<span class="w-2 h-2 rounded-full bg-current opacity-80"></span>';
+      if (enrollment === 'IND-enabling') return `<span class="${baseClass} status-ind-enabling">${dot}IND-enabling</span>`;
+      if (enrollment === 'IND-cleared') return `<span class="${baseClass} status-ind-cleared">${dot}IND-cleared</span>`;
+      if (enrollment === 'Phase 1 planned') return `<span class="${baseClass} status-phase-1">${dot}Phase 1 planned</span>`;
+      if (enrollment === 'Post-IND-enabling') return `<span class="${baseClass} status-post-ind-enabling">${dot}Post-IND-enabling</span>`;
+      return `<span class="${baseClass} bg-gray-900 text-gray-300 ring-1 ring-gray-600">${dot}${enrollment}</span>`;
+    }
+
+    function getFundingIcon(score) {
+      const baseSvg = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"/></svg>';
+      const classes = {
+        5: 'funding-score-5',
+        4: 'funding-score-4',
+        3: 'funding-score-3',
+        2: 'funding-score-2'
+      };
+      return baseSvg.replace('class="w-4 h-4"', `class="w-4 h-4 ${classes[score] || 'text-gray-500'}"`);
+    }
+
+    function getSignalBadges(item) {
+      const signals = [];
+      const base = 'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors';
+      if (item.target.toLowerCase().includes('gpcr')) signals.push(`<span class="${base} bg-blue-900 text-blue-300 border border-blue-600 hover:bg-blue-800">GPCR</span>`);
+      if (item.modality.toLowerCase().includes('cns')) signals.push(`<span class="${base} bg-purple-900 text-purple-300 border border-purple-600 hover:bg-purple-800">CNS</span>`);
+      if (item.modality.toLowerCase().includes('obesity')) signals.push(`<span class="${base} bg-green-900 text-green-300 border border-green-600 hover:bg-green-800">Obesity</span>`);
+      if (item.modality.toLowerCase().includes('oncology')) signals.push(`<span class="${base} bg-pink-900 text-pink-300 border border-pink-600 hover:bg-pink-800">Oncology</span>`);
+      return signals.length ? signals.join(' ') : '<span class="text-707080 text-xs">—</span>';
+    }
+
+    // Render table
+    function renderTable(rows) {
+      const tbody = $('#tableBody');
+      tbody.innerHTML = '';
+      
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-3a0ca3 cursor-pointer transition-colors duration-200 card-hover";
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="font-semibold text-e0e0e0">${r.company}</div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="font-medium text-e0e0e0">${r.candidate}</div>
+            <div class="text-sm text-9090a0 mt-0.5">${r.target}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(r.enrollment)}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-start gap-2">
+              ${getFundingIcon(r.funding.cashScore)}
+              <span class="text-sm text-9090a0 line-clamp-2">${r.funding.summary}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-9090a0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              <span class="text-sm font-medium text-e0e0e0">${r.employees ?? '—'}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4">${getSignalBadges(r)}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-707080">${r.lastUpdate || '—'}</td>
+        `;
+        tr.addEventListener('click', () => openModal(r));
+        tbody.appendChild(tr);
+      });
+      
+      $('#rowCount').textContent = rows.length;
+    }
+
+    // Filters
+    function applyFilters() {
+      const q = $('#searchInput').value.trim().toLowerCase();
+      const enroll = $('#enrollSelect').value;
+      const minEmp = parseInt($('#minEmp').value || '0', 10);
+      const hasFunding = $('#hasFundingChk').checked;
+      
+      const filtered = leads.filter(l => {
+        const text = `${l.company} ${l.candidate} ${l.target} ${l.modality} ${l.funding.summary} ${l.bdNotes} ${l.xInsights}`.toLowerCase();
+        if (q && !text.includes(q)) return false;
+        if (enroll && l.enrollment !== enroll) return false;
+        if (!isNaN(minEmp) && minEmp > 0) {
+          const sz = parseInt(l.employees.split('-')[0]) || 0;
+          if (sz < minEmp) return false;
+        }
+        if (hasFunding && l.funding.cashScore < 3) return false;
+        return true;
+      });
+      
+      currentRows = filtered;
+      renderTable(filtered);
+    }
+
+    // Sorting
+    let sortKey = null, sortAsc = true;
+    function sortRows(key) {
+      sortAsc = (sortKey === key) ? !sortAsc : true;
+      sortKey = key;
+      $$('.sort-icon').forEach(icon => {
+        icon.style.transform = sortAsc ? 'rotate(0deg)' : 'rotate(180deg)';
+      });
+      currentRows.sort((a, b) => {
+        let va = a[key] || (key === 'cashScore' ? a.funding.cashScore : 0);
+        let vb = b[key] || (key === 'cashScore' ? b.funding.cashScore : 0);
+        if (typeof va === 'string' && typeof vb === 'string') va = va.toLowerCase(), vb = vb.toLowerCase();
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+      });
+      renderTable(currentRows);
+    }
+
+    // Enhanced Modal Rendering
+    function openModal(item) {
+      $('#mTitle').textContent = item.company;
+      $('#mSubtitle').textContent = `${item.candidate} — ${item.modality}`;
+
+      const facts = [
+        ["Stage", item.enrollment],
+        ["Target", item.target],
+        ["Team Size", item.employees || '—'],
+        ["Hiring", item.hiring.status || '—'],
+        ["Last Updated", item.lastUpdate || '—'],
+        ["X Insights", item.xInsights || '—']
+      ];
+      $('#mFacts').innerHTML = facts.map(([k, v]) => `
+        <div class="flex items-start justify-between gap-4">
+          <dt class="text-xs font-medium text-9090a0">${k}</dt>
+          <dd class="text-sm font-medium text-e0e0e0 text-right line-clamp-2">${v}</dd>
+        </div>
+      `).join('');
+
+      $('#mContacts').innerHTML = item.contacts.map(c => `
+        <li class="flex items-start gap-3">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-3a0ca3 flex items-center justify-center">
+            <svg class="w-4 h-4 text-e0e0e0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-e0e0e0">${c.name}</div>
+            <div class="text-xs text-707080">${c.title}</div>
+            ${c.email ? `<div class="text-xs text-9090a0 mt-0.5">${c.email}</div>` : ''}
+            <a href="${c.linkedin}" target="_blank" class="text-xs text-7b2cbf hover:text-purple-100 hover:underline mt-1 inline-flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              LinkedIn
+            </a>
+          </div>
+        </li>
+      `).join('');
+      
+      $('#mEmailPattern').textContent = item.emailDomain ? `Domain: ${item.emailDomain} (pattern: firstname.lastname@domain)` : '';
+
+      // Quick links
+      $('#mIR').href = item.irLinks[0].url || '#';
+      $('#mJobs').href = item.hiring.jobsUrl || '#';
+      $('#mCT').href = item.ctQuery || '#';
+      $('#mPat').href = item.patentSearch || '#';
+
+      // Tab Content (with increased spacing)
+      $('#tab-compound').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Compound Summary</h4> <!-- Increased margin -->
+          <p class="text-sm text-9090a0 leading-relaxed">${item.compound.summary}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Process Chemistry Details</h4>
+          <ul class="modal-list">
+            ${item.compound.details.map(d => `<li class="text-sm text-9090a0">${d}</li>`).join('')}
+          </ul>
+          <div class="mt-6"> <!-- Increased margin -->
+            <h5 class="text-xs font-semibold text-707080 mb-2">Related Links</h5>
+            <div class="flex flex-wrap gap-3"> <!-- Increased gap -->
+              ${item.compound.links.map(l => `<a href="${l.url}" target="_blank" class="modal-link text-xs">${l.label}</a>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">ChEMBL Information</h4>
+          <p class="text-sm text-9090a0">${item.compound.chembl}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">PubChem Information</h4>
+          <p class="text-sm text-9090a0">${item.compound.pubchem}</p>
+          <table class="modal-table mt-6"> <!-- Increased margin -->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>CID</th>
+                <th>Link</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${item.compound.pubchemTable.map(row => `
+                <tr>
+                  <td>${row.name}</td>
+                  <td>${row.cid}</td>
+                  <td><a href="${row.link}" target="_blank" class="modal-link">View Structure</a></td>
+                  <td>${row.details}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      $('#tab-trial').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Trial Design</h4>
+          <p class="text-sm text-9090a0">${item.trial.design}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Key Considerations</h4>
+          <ul class="modal-list">
+            ${item.trial.notes.map(n => `<li class="text-sm text-9090a0">${n}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      $('#tab-funding').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Funding Summary</h4>
+          <p class="text-sm text-9090a0">${item.funding.summary}</p>
+          <p class="text-sm text-9090a0 mt-4">${item.funding.details}</p> <!-- Increased spacing -->
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Funding Links</h4>
+          <div class="flex flex-wrap gap-3"> <!-- Increased gap -->
+            ${item.funding.links.map(l => `<a href="${l.url}" target="_blank" class="modal-link text-xs">${l.label}</a>`).join('')}
+          </div>
+        </div>
+      `;
+
+      $('#tab-publications').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Publications Summary</h4>
+          <p class="text-sm text-9090a0">${item.publications.summary}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Publication List</h4>
+          <ul class="modal-list">
+            ${item.publications.list.map(p => `<li><a href="${p.url}" target="_blank" class="modal-link">${p.label}</a></li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      $('#tab-patents').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Patents Summary</h4>
+          <p class="text-sm text-9090a0">${item.patents.summary}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Patent Links</h4>
+          <div class="flex flex-wrap gap-3"> <!-- Increased gap -->
+            ${item.patents.links.map(l => `<a href="${l.url}" target="_blank" class="modal-link text-xs">${l.label}</a>`).join('')}
+          </div>
+        </div>
+      `;
+
+      $('#tab-news').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">News Summary</h4>
+          <p class="text-sm text-9090a0">${item.news.summary}</p>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">News Articles</h4>
+          <ul class="modal-list">
+            ${item.news.list.map(n => `<li><a href="${n.url}" target="_blank" class="modal-link">${n.label}</a></li>`).join('')}
+          </ul>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">X Posts</h4>
+          <ul class="modal-list">
+            ${item.news.xPosts.map(p => `
+              <li class="border-b pb-3 mb-3 border-3a0ca3"> <!-- Increased spacing -->
+                <p class="text-sm font-medium text-e0e0e0">${p.author}</p>
+                <p class="text-sm text-9090a0">${p.content}</p>
+                <a href="${p.url}" target="_blank" class="modal-link text-xs">View Post</a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Key Citations</h4>
+          <ul class="modal-list">
+            ${item.citations.map(c => `<li><a href="${c.url}" target="_blank" class="modal-link text-xs">${c.label}</a></li>`).join('')}
+          </ul>
+        </div>
+      `;
+
+      $('#tab-databases').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">ChEMBL & PubChem Overview</h4>
+          <p class="text-sm text-9090a0">${item.compound.chembl}</p>
+          <p class="text-sm text-9090a0 mt-4">${item.compound.pubchem}</p> <!-- Increased spacing -->
+        </div>
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">Related PubChem Compounds</h4>
+          <table class="modal-table mt-6"> <!-- Increased margin -->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>CID</th>
+                <th>Link</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${item.compound.pubchemTable.map(row => `
+                <tr>
+                  <td>${row.name}</td>
+                  <td>${row.cid}</td>
+                  <td><a href="${row.link}" target="_blank" class="modal-link">View Structure</a></td>
+                  <td>${row.details}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      $('#tab-notes').innerHTML = `
+        <div class="modal-section card-hover">
+          <h4 class="text-sm font-semibold text-e0e0e0 mb-4">BD Notes</h4>
+          <p class="text-sm text-9090a0">${item.bdNotes}</p>
+        </div>
+      `;
+
+      // Show modal with animation
+      const modal = $('#modal');
+      const content = $('#modalContent');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+      }, 10);
+      document.body.classList.add('overflow-hidden');
+
+      // Activate first tab
+      activateTab('compound');
+    }
+
+    function closeModal() {
+      const content = $('#modalContent');
+      content.classList.remove('scale-100', 'opacity-100');
+      content.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        $('#modal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      }, 300);
+    }
+
+    // Tabs logic
+    function activateTab(name) {
+      $$('#tabs .tab').forEach(btn => {
+        btn.classList.toggle('tab-active', btn.dataset.tab === name);
+      });
+      $$('.tabpane').forEach(pane => pane.classList.toggle('hidden', pane.id !== `tab-${name}`));
+    }
+
+    // CSV Export
+    function exportCsv(rows) {
+      const headers = ["Company", "Candidate", "Target", "Modality", "Enrollment", "Funding Summary", "Cash Score", "Employees", "Hiring Status", "Last Update", "BD Notes"];
+      const csv = [headers.join(',')]
+        .concat(rows.map(r => [
+          r.company,
+          r.candidate,
+          r.target,
+          r.modality,
+          r.enrollment,
+          (r.funding.summary || '').replaceAll(',', ';'),
+          r.funding.cashScore,
+          r.employees || '',
+          r.hiring.status || '',
+          r.lastUpdate || '',
+          (r.bdNotes || '').replaceAll(',', ';').replaceAll('\n', ' ')
+        ].map(v => `"${String(v).replaceAll('"', '""')}"`).join(',')))
+        .join('\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'enhanced-ind-enabling-leads.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // State + events
+    let currentRows = [...leads];
+    renderTable(currentRows);
+
+    $('#searchInput').addEventListener('input', applyFilters);
+    $('#enrollSelect').addEventListener('change', applyFilters);
+    $('#minEmp').addEventListener('input', applyFilters);
+    $('#hasFundingChk').addEventListener('change', applyFilters);
+
+    $('#resetBtn').addEventListener('click', () => {
+      $('#searchInput').value = '';
+      $('#enrollSelect').value = '';
+      $('#minEmp').value = '';
+      $('#hasFundingChk').checked = false;
+      currentRows = [...leads];
+      renderTable(currentRows);
+    });
+
+    $('#exportCsvBtn').addEventListener('click', () => exportCsv(currentRows));
+
+    $('#closeModal').addEventListener('click', closeModal);
+    $('#modalBackdrop').addEventListener('click', closeModal);
+
+    $$('#tabs .tab').forEach(btn => btn.addEventListener('click', () => activateTab(btn.dataset.tab)));
+
+    $$('.sortbtn').forEach(b => b.addEventListener('click', () => sortRows(b.dataset.sort)));
+
+    $$('.qbtn').forEach(b => b.addEventListener('click', () => {
+      $('#searchInput').value = b.dataset.q;
+      applyFilters();
+    }));
+  </script>
+</body>
+</html>
+
+   

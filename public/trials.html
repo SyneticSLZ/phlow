@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Early Phase 1 — New Trials</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="data:," />
+
+  <style>
+    /* Smooth fade-in for rows */
+    .fade-in { animation: fadeIn .3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(2px);} to { opacity: 1; transform: none; } }
+
+    /* Nice focus ring for a11y */
+    .focus-ring:focus { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.5); }
+
+    /* Sticky header on wide screens */
+    @media (min-width: 1024px) {
+      thead th { position: sticky; top: 0; background: #0b1220; z-index: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <header class="border-b border-slate-800 bg-slate-950/60 backdrop-blur">
+    <div class="mx-auto max-w-7xl px-4 py-6">
+      <div class="flex items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold tracking-tight">Early Phase 1 — New Trials</h1>
+        <a href="/" class="text-slate-400 hover:text-slate-200 text-sm">Back to Dashboard</a>
+      </div>
+      <p class="mt-2 text-slate-400 text-sm">Live view of recent Early Phase 1 / first-in-human trials from your backend.</p>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-6">
+    <!-- Controls -->
+    <section class="mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-slate-400 min-w-[90px]">Since (days)</label>
+        <input id="sinceDays" type="number" min="1" value="60"
+               class="focus-ring w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-sm" />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-slate-400 min-w-[90px]">Country</label>
+        <input id="country" type="text" placeholder="e.g. United States"
+               class="focus-ring w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-sm" />
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <label class="inline-flex items-center gap-2">
+          <input id="earlyPhaseOnly" type="checkbox" class="accent-blue-500" checked />
+          <span class="text-sm text-slate-300">Early Phase only</span>
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input id="fihHeuristic" type="checkbox" class="accent-blue-500" checked />
+          <span class="text-sm text-slate-300">FIH heuristic</span>
+        </label>
+        <label class="inline-flex items-center gap-2">
+          <input id="includeOncology" type="checkbox" class="accent-blue-500" />
+          <span class="text-sm text-slate-300">Include oncology</span>
+        </label>
+      </div>
+
+      <div class="md:col-span-2 lg:col-span-1 flex items-center gap-2">
+        <input id="search" type="search" placeholder="Search title, sponsor, NCT..."
+               class="focus-ring w-full rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-sm" />
+        <button id="refreshBtn"
+          class="rounded-xl bg-blue-600 hover:bg-blue-500 px-4 py-2 text-sm font-medium">Refresh</button>
+      </div>
+    </section>
+
+    <!-- Actions / status -->
+    <section class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div id="status" class="text-sm text-slate-400">Ready.</div>
+      <div class="flex items-center gap-2">
+        <button id="exportCsvBtn"
+          class="rounded-xl border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-2 text-sm">Export CSV</button>
+        <button id="copyLinkBtn"
+          class="rounded-xl border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-2 text-sm">Copy Shareable Link</button>
+      </div>
+    </section>
+
+    <!-- Table -->
+    <section class="overflow-x-auto rounded-2xl border border-slate-800 shadow-xl shadow-black/20">
+      <table class="min-w-full divide-y divide-slate-800">
+        <thead class="bg-slate-950">
+          <tr class="text-left text-xs uppercase tracking-wider text-slate-400">
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="trialId">NCT ID</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="title">Title</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="phase">Phase</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="status">Status</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="sponsor">Sponsor</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="startDate">Start</th>
+            <th class="px-4 py-3 cursor-pointer select-none" data-sort="firstPosted">First Posted</th>
+            <th class="px-4 py-3">Countries</th>
+            <th class="px-4 py-3">Interventions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y divide-slate-900 bg-slate-950"></tbody>
+      </table>
+
+      <div id="emptyState" class="hidden p-8 text-center text-slate-400">
+        No trials found. Try widening your filters.
+      </div>
+    </section>
+
+    <!-- Pagination (client-side) -->
+    <section id="pager" class="mt-4 flex items-center justify-end gap-3">
+      <button id="prevPage" class="rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-sm disabled:opacity-50" disabled>Prev</button>
+      <div id="pageInfo" class="text-sm text-slate-400">Page 1 / 1</div>
+      <button id="nextPage" class="rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 text-sm disabled:opacity-50" disabled>Next</button>
+    </section>
+  </main>
+
+  <script>
+    // ---------- CONFIG ----------
+    // If this HTML is served from a different origin than your API,
+    // set API_BASE to that origin and ensure CORS allows it.
+    const API_BASE = ""; // e.g. "https://yourdomain.com"
+    const API_PATH = "/api/trials/new";
+
+    // ---------- STATE ----------
+    let rawData = [];          // full list from backend
+    let viewData = [];         // filtered/sorted
+    let currentSort = { key: "firstPosted", dir: "desc" };
+    let currentPage = 1;
+    const pageSize = 25;
+
+    // ---------- HELPERS ----------
+    const $ = (id) => document.getElementById(id);
+    const fmt = (x) => (x ?? "").toString();
+    const fmtDate = (s) => {
+      if (!s) return "";
+      // Accept YYYY-MM-DD or ISO
+      const d = new Date(s);
+      if (isNaN(d)) return s;
+      return d.toISOString().slice(0,10);
+    };
+    const toCSV = (rows, headers) => {
+      const head = headers.map(h => `"${h.label.replace(/"/g,'""')}"`).join(",");
+      const body = rows.map(r =>
+        headers.map(h => `"${fmt(h.get(r)).replace(/"/g,'""')}"`).join(",")
+      ).join("\n");
+      return head + "\n" + body;
+    };
+    const setStatus = (msg) => { $("status").textContent = msg; };
+
+    const getQueryParams = () => {
+      return {
+        sinceDays: $("sinceDays").value || "60",
+        country: $("country").value || "",
+        earlyPhaseOnly: $("earlyPhaseOnly").checked,
+        fihHeuristic: $("fihHeuristic").checked,
+        includeOncology: $("includeOncology").checked,
+      };
+    };
+
+    const buildShareLink = () => {
+      const params = getQueryParams();
+      const url = new URL(window.location.href);
+      Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+      return url.toString();
+    };
+
+    const applyURLParams = () => {
+      const url = new URL(window.location.href);
+      const get = (k, d=null) => url.searchParams.get(k) ?? d;
+
+      const sd = get("sinceDays");
+      if (sd) $("sinceDays").value = sd;
+      const c = get("country");
+      if (c) $("country").value = c;
+      const epo = get("earlyPhaseOnly");
+      if (epo !== null) $("earlyPhaseOnly").checked = epo === "true";
+      const fih = get("fihHeuristic");
+      if (fih !== null) $("fihHeuristic").checked = fih === "true";
+      const onco = get("includeOncology");
+      if (onco !== null) $("includeOncology").checked = onco === "true";
+    };
+
+    // ---------- RENDER ----------
+    const tmplRow = (t) => {
+      const countries = (t.locationCountries || []).join(", ");
+      const intervs = (t.interventions || [])
+        .map(i => i.InterventionName || i.name || "").filter(Boolean).join("; ");
+
+      const nctLink = t.trialId
+        ? `https://clinicaltrials.gov/study/${encodeURIComponent(t.trialId)}`
+        : null;
+
+      return `
+        <tr class="fade-in hover:bg-slate-900/60">
+          <td class="px-4 py-3 text-sm">
+            ${nctLink
+              ? `<a href="${nctLink}" target="_blank" class="text-blue-400 hover:text-blue-300 underline underline-offset-4">${fmt(t.trialId)}</a>`
+              : fmt(t.trialId)}
+          </td>
+          <td class="px-4 py-3 text-sm">
+            <div class="font-medium text-slate-100">${fmt(t.title || t.briefTitle)}</div>
+            <div class="text-xs text-slate-400 line-clamp-2">${fmt((t.conditions || []).join(", "))}</div>
+          </td>
+          <td class="px-4 py-3 text-xs text-slate-300">${fmt(t.phase)}</td>
+          <td class="px-4 py-3 text-xs">
+            <span class="inline-flex rounded-full bg-slate-800 px-2 py-0.5">${fmt(t.status)}</span>
+          </td>
+          <td class="px-4 py-3 text-sm">${fmt(t.sponsor)}</td>
+          <td class="px-4 py-3 text-xs text-slate-300">${fmtDate(t.startDate)}</td>
+          <td class="px-4 py-3 text-xs text-slate-300">${fmtDate(t.firstPosted)}</td>
+          <td class="px-4 py-3 text-xs text-slate-300">${countries}</td>
+          <td class="px-4 py-3 text-xs text-slate-300">${intervs}</td>
+        </tr>
+      `;
+    };
+
+    const render = () => {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+
+      // Filter by search text
+      const q = ($("search").value || "").toLowerCase().trim();
+      viewData = rawData.filter(t => {
+        if (!q) return true;
+        const hay = [
+          t.trialId, t.title, t.briefTitle, t.sponsor,
+          (t.conditions || []).join(" "),
+          (t.interventions || []).map(i => i.InterventionName || i.name || "").join(" "),
+        ].join(" ").toLowerCase();
+        return hay.includes(q);
+      });
+
+      // Sort
+      const { key, dir } = currentSort;
+      viewData.sort((a, b) => {
+        const va = (a?.[key] ?? "").toString().toLowerCase();
+        const vb = (b?.[key] ?? "").toString().toLowerCase();
+        if (va < vb) return dir === "asc" ? -1 : 1;
+        if (va > vb) return dir === "asc" ? 1 : -1;
+        return 0;
+      });
+
+      // Pagination
+      const totalPages = Math.max(1, Math.ceil(viewData.length / pageSize));
+      currentPage = Math.max(1, Math.min(currentPage, totalPages));
+      const start = (currentPage - 1) * pageSize;
+      const pageItems = viewData.slice(start, start + pageSize);
+
+      // Rows
+      tbody.innerHTML = pageItems.map(tmplRow).join("");
+
+      // Empty state
+      $("emptyState").classList.toggle("hidden", viewData.length > 0);
+
+      // Pager controls
+      $("pageInfo").textContent = `Page ${currentPage} / ${totalPages}`;
+      $("prevPage").disabled = currentPage <= 1;
+      $("nextPage").disabled = currentPage >= totalPages;
+
+      setStatus(`Showing ${pageItems.length} of ${viewData.length} trials (total fetched: ${rawData.length}).`);
+    };
+
+    // ---------- FETCH ----------
+    const fetchTrials = async () => {
+      const { sinceDays, country, earlyPhaseOnly, fihHeuristic, includeOncology } = getQueryParams();
+
+      const url = new URL(API_PATH, API_BASE || window.location.origin);
+      url.searchParams.set("sinceDays", sinceDays);
+      if (country) url.searchParams.set("country", country);
+      url.searchParams.set("earlyPhaseOnly", String(earlyPhaseOnly));
+      url.searchParams.set("fihHeuristic", String(fihHeuristic));
+      url.searchParams.set("includeOncology", String(includeOncology));
+
+      setStatus("Loading…");
+      try {
+        const res = await fetch(url.toString(), { method: "GET" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        // The GET route example returned { count, trials } or { filtered, meta, debug }
+        const trials = Array.isArray(data.trials) ? data.trials
+                     : Array.isArray(data.filtered) ? data.filtered
+                     : [];
+
+        rawData = trials;
+        currentPage = 1;
+        render();
+        setStatus(`Loaded ${trials.length} trials.`);
+      } catch (err) {
+        console.error(err);
+        setStatus(`Failed to load trials: ${err.message}`);
+        rawData = [];
+        render();
+      }
+    };
+
+    // ---------- EVENTS ----------
+    $("refreshBtn").addEventListener("click", fetchTrials);
+    $("search").addEventListener("input", () => { currentPage = 1; render(); });
+    $("prevPage").addEventListener("click", () => { currentPage--; render(); });
+    $("nextPage").addEventListener("click", () => { currentPage++; render(); });
+
+    // Table header sorting
+    document.querySelectorAll("thead th[data-sort]").forEach(th => {
+      th.addEventListener("click", () => {
+        const key = th.getAttribute("data-sort");
+        if (currentSort.key === key) {
+          currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
+        } else {
+          currentSort.key = key;
+          currentSort.dir = "asc";
+        }
+        render();
+      });
+    });
+
+    // Export CSV
+    $("exportCsvBtn").addEventListener("click", () => {
+      const headers = [
+        { label: "NCT ID", get: r => r.trialId || "" },
+        { label: "Title", get: r => r.title || r.briefTitle || "" },
+        { label: "Phase", get: r => r.phase || "" },
+        { label: "Status", get: r => r.status || "" },
+        { label: "Sponsor", get: r => r.sponsor || "" },
+        { label: "Start Date", get: r => fmtDate(r.startDate) },
+        { label: "First Posted", get: r => fmtDate(r.firstPosted) },
+        { label: "Countries", get: r => (r.locationCountries || []).join("; ") },
+        { label: "Interventions", get: r => (r.interventions || []).map(i => i.InterventionName || i.name || "").join("; ") },
+      ];
+      const csv = toCSV(viewData, headers);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "early_phase_trials.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Copy shareable link
+    $("copyLinkBtn").addEventListener("click", async () => {
+      const link = buildShareLink();
+      try {
+        await navigator.clipboard.writeText(link);
+        setStatus("Shareable link copied to clipboard.");
+      } catch {
+        setStatus(link);
+      }
+    });
+
+    // Initialize from URL and fetch
+    applyURLParams();
+    fetchTrials();
+  </script>
+</body>
+</html>
