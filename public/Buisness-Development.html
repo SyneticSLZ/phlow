@@ -58,15 +58,40 @@
     <div class="max-w-[1600px] mx-auto px-6 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-lg font-semibold text-white">IND-Enabling Lead Finder</h1>
-            <p class="text-sm text-slate-400">Updated Oct 2025</p>
-          </div>
+          <div class="flex items-center">
+                        <!-- Beautiful gradient leaf icon -->
+                        <div class="relative">
+                            <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none">
+                                <defs>
+                                    <linearGradient id="leaf-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#10b981" /> 
+                                        <stop offset="50%" stop-color="#06b6d4" /> 
+                                        <stop offset="100%" stop-color="#8b5cf6" /> 
+                                    </linearGradient>
+                                </defs>
+                                
+                                <path d="M12 2C8 2 5 5 5 9c0 2.5 1 4.5 2.5 6L12 22l4.5-7C18 13.5 19 11.5 19 9c0-4-3-7-7-7z" 
+                                      fill="url(#leaf-gradient)" 
+                                      stroke="url(#leaf-gradient)" 
+                                      stroke-width="0.5"/>
+                               
+                                <path d="M12 6v10M10 8l4 2M10 12l4 2" 
+                                      stroke="white" 
+                                      stroke-width="1" 
+                                      stroke-linecap="round" 
+                                      opacity="0.6"/>
+                            </svg> -->
+                            <img src="leaf.png" alt="Leaf Intelligence" class="h-14 w-14 object-contain">
+                            <!-- Subtle glow effect -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 opacity-20 blur-lg rounded-full"></div>
+                        </div>
+                        <div class="ml-3">
+                            <span class="text-l font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                Leaf Intelligence
+                            </span>
+                            <div class="text-xs text-gray-600 font-medium tracking-wide">Business Development Platform</div>
+                        </div>
+                    </div>
         </div>
         <div class="flex items-center gap-3">
           <button id="exportCsvBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-all">
@@ -544,7 +569,7 @@
         employees: "20-30",
         hiring: { status: "No current openings (lean operations, outsourcing likely)", jobsUrl: "https://superluminalrx.com/careers/" },
         funding: {
-          summary: "Seed $33M (2023), Series A $120M (2024), Lilly collaboration up to $1.3B (upfront + equity + milestones + royalties, excludes MC4R); strong runway into clinical stages",
+          summary: "Seed $33M (Aug 2023); Series A $120M (Sep 2024); Lilly collaboration up to $1.3B (Aug 2025). MC4R lead remains wholly owned while the Lilly deal focuses on undisclosed GPCR targets.",
           cashScore: 5,
           details: "Seed Round: $33 million in 2023 (mentioned in Series A announcements). Series A: $120 million in September 2024, led by RA Capital Management with participation from Insight Partners, NVentures, Catalio Capital Management, Eli Lilly, and Gaingels; supports progression of lead program (MC4R) into clinical development and more GPCR programs. Lilly Collaboration: Up to $1.3 billion (upfront, near-term payments, equity investment, development and commercial milestones, tiered royalties); focuses on undisclosed GPCR targets for cardiometabolic diseases and obesity; excludes MC4R agonist, which is wholly owned and expected to enter clinic in 2026.",
           links: [
@@ -686,7 +711,7 @@
         employees: 109,
         hiring: { status: "20+ active openings in clinical/RA/biometrics (scale-up indicator)", jobsUrl: "https://job-boards.greenhouse.io/maplighttherapeutics" },
         funding: {
-          summary: "Series D $372.5M (July 2025), S-1 for $100M IPO (Sept 2025, ticker MPLT); total raised $800M+; strong runway. Previous: $225M Series C (Oct 2023). Funding supports development of multiple clinical candidates, including Phase 2 studies.",
+          summary: "Series D $372.5M (Jul 2025). Cumulative capital raised since inception ~$511M per S-1 filed Sep 19, 2025. IPO filing for up to ~$100M (ticker MPLT).",
           cashScore: 5,
           details: "Series D: $372.5M led by Novo Holdings, with participation from 5AM Ventures and others; to advance muscarinic receptor agonist platform. IPO filing: Up to $100M on NASDAQ (MPLT), filed September 21, 2025. Series C: $225M in October 2023 for neurological and psychiatric disorders.",
           links: [
@@ -777,7 +802,7 @@
         employees: 163,
         hiring: { status: "7+ active openings in operations, QA, supply chain", jobsUrl: "https://ir.structuretx.com/" },
         funding: {
-          summary: "Cash $836.9M (Q2 2025), runway through 2027; $300M placement (2023).",
+          summary: "Cash, cash equivalents & short-term investments: $786.5M as of Jun 30, 2025 (Q2). Previously $836.9M as of Mar 31, 2025 (Q1). Company guides runway through at least 2027 (ex-Phase 3).",
           cashScore: 5,
           details: "Cash and equivalents $836.9M as of March 31, 2025 (Q1 report); expected to fund operations through at least 2027. Q2 2025 financial results reported August 6, 2025. Previous $300M private placement in 2023. Strong ability to outsource speed-ups.",
           links: [
@@ -876,7 +901,7 @@
         employees: "10-15",
         hiring: { status: "No open positions (rightsized, strong CRO/CMO intent)", jobsUrl: "https://www.addextherapeutics.com/en/about-us/careers/" },
         funding: {
-          summary: "Lean ops; $5M equity (2023); Indivior collaboration milestones; cash runway to mid-2026 post-Neurosterix spinout. Q1 2025 cash CHF2.8M.",
+          summary: "Cash CHF 2.8M as of Mar 31, 2025; CHF 5.0M gross proceeds from the Neurosterix transaction received Apr 2024; milestone-based Indivior collaboration (amounts undisclosed).",
           cashScore: 2,
           details: "Strong cash position of CHF2.8 million at end of Q1 2025. Full year 2024 financial results reported April 2025. Indivior selected GABAB PAM for development in substance use disorders, started IND enabling in H1 2025. Collaboration extended until June 2024 with $3M grant in 2023.",
           links: [
@@ -974,7 +999,7 @@
         employees: "28 / 5-10",
         hiring: { status: "No public openings (small teams, outsourcing-friendly)", jobsUrl: "https://ir.biolinerx.com/" },
         funding: {
-          summary: "BioLineRx $28.2M cash (June 2025), runway to 1H 2027; JV announced Sep 2025 with Norwegian grants.",
+          summary: "Cash $28.2M as of Jun 30, 2025; runway into 1H 2027. JV to develop GLIX1 announced Sep 29, 2025.",
           cashScore: 3,
           details: "BioLineRx cash $28.2M as of June 30, 2025; guides runway into 1H 2027. JV structure leverages BioLineRx public capital + Norwegian grants; Hemispherian contributes global rights to GLIX1.",
           links: [
@@ -1073,7 +1098,7 @@
         'Phase 1 planned': 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
         'Post-IND-enabling': 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
       };
-      const classes = badges[enrollment] || 'bg-slate-700 text-slate-300 border border-slate-600';
+      const classes = badges[enrollment] || 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
       return `<span class="status-badge ${classes}">${enrollment}</span>`;
     }
 
